@@ -1,0 +1,87 @@
+Delivered-To: mack.cee@gmail.com
+Received: by 2002:a05:6130:850:b0:7fc:1bdb:74e3 with SMTP id kb16csp1794602uab;
+        Fri, 24 May 2024 10:58:52 -0700 (PDT)
+X-Received: by 2002:a2e:97c3:0:b0:2d9:f00c:d2d5 with SMTP id 38308e7fff4ca-2e95b27b08amr17054151fa.46.1716573531767;
+        Fri, 24 May 2024 10:58:51 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1716573531; cv=none;
+        d=google.com; s=arc-20160816;
+        b=o74qQB0ynu3A3tBQML1ygYaKmd3X7jMU7KsVmgr4TzsM1BJEtO68UdofbJ4RjyYzqs
+         BGRXMjb0vczuRUoob2vMhTEL8WgajmtUb54BFUeZLOivjRjLQn371cwwn4xie+mdb0ew
+         KCBdptVHjv/RF9zaCiOhdVzGZQz+xiAR55Wl6v+KF85emiIv5bMMFp3v5eWQyY4Z46nj
+         Swlh0+trFzWDmur7+j55zIvqwxlLywZuh3bT4VH1Xf8Cf8av4WNoeV+RrJnXYS/YtR/K
+         VyrdPnQPFpQTAAzZaxAwFa/slclYNmSlK9810uTAqcmt05rhy2VtArdBImdQOlnTsZhC
+         v00g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20160816;
+        h=to:subject:message-id:date:from:mime-version:dkim-signature;
+        bh=bYpB4XhmSXi1YlJwbsi/LW73JMPQD2xi8L562Ja3F4I=;
+        fh=pBA6fxxDLhglBQgd5ona+usSO9NLlSiCRwy7CqZ99qc=;
+        b=M3Zs02FcILSsHGJrqVfZy0rIrZztin5CYLwXUUgrrzkbrDwHcvsrD5UeeOv+t+9c0/
+         z8yywpjdg/2gCdsp5miytVX8jXxga9IhA4Z/cbvknpc7c88a2ihH9Ubh0+VA0xvXYMtg
+         eaNAGdvWWP1/mmgdIwTb21q2SPJ58unigSHctKLsQIYAL+aalvh8JXRK+9pd6SkPEApp
+         Plg85TaHCnmSyx5QL2C1k95Qso1EwSXuAZdEtArm2PXqAjQfzCDPh4l1Dh93D0QpWBjp
+         upRfxgx7Su8uCaLh4DBgRvMNn3V5uA8PxuIIQYxqWGNedhEV2XXG0DTViqqdE4TOFm+4
+         eQJw==;
+        dara=google.com
+ARC-Authentication-Results: i=1; mx.google.com;
+       dkim=pass header.i=@gmail.com header.s=20230601 header.b=ey1sPu4Q;
+       spf=pass (google.com: domain of humptydumptydevs@gmail.com designates 209.85.220.41 as permitted sender) smtp.mailfrom=humptydumptydevs@gmail.com;
+       dmarc=pass (p=NONE sp=QUARANTINE dis=NONE) header.from=gmail.com
+Return-Path: <humptydumptydevs@gmail.com>
+Received: from mail-sor-f41.google.com (mail-sor-f41.google.com. [209.85.220.41])
+        by mx.google.com with SMTPS id 38308e7fff4ca-2e95bcf9477sor5076191fa.8.2024.05.24.10.58.51
+        for <Mack.Cee@gmail.com>
+        (Google Transport Security);
+        Fri, 24 May 2024 10:58:51 -0700 (PDT)
+Received-SPF: pass (google.com: domain of humptydumptydevs@gmail.com designates 209.85.220.41 as permitted sender) client-ip=209.85.220.41;
+Authentication-Results: mx.google.com;
+       dkim=pass header.i=@gmail.com header.s=20230601 header.b=ey1sPu4Q;
+       spf=pass (google.com: domain of humptydumptydevs@gmail.com designates 209.85.220.41 as permitted sender) smtp.mailfrom=humptydumptydevs@gmail.com;
+       dmarc=pass (p=NONE sp=QUARANTINE dis=NONE) header.from=gmail.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1716573531; x=1717178331; dara=google.com;
+        h=to:subject:message-id:date:from:mime-version:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=bYpB4XhmSXi1YlJwbsi/LW73JMPQD2xi8L562Ja3F4I=;
+        b=ey1sPu4QKBT+YUfyu7DZl2hXv07g840dxTRiDbsUu3Tp1jLXQajLkLGmBAnBKNKAdz
+         ApcLXyA3tYctI9qRZYG+Calth9SGBCHaPz48UcE6DB+H8FETvqRWBni02TYqJsOcDKat
+         ZhP4fWbUEuB3wmWGfZ5wSnrshw66xFQlh5M+Mt1sz3AfYQi6qexUY+Vtpr47I4hAyt58
+         lvUOgDTfNWlyGfam2XEO8O5PjufEhG2nvo88gXroKPZJ66uZdBaf4kxNZpf4WX+srVYY
+         Osdu/QiQ2cFs7MYEIVsDeaBW+Jp9xmLk9rWipoNTkSNBNYKhcn+aqwL+7GZD2bVDimEa
+         S/Rg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1716573531; x=1717178331;
+        h=to:subject:message-id:date:from:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=bYpB4XhmSXi1YlJwbsi/LW73JMPQD2xi8L562Ja3F4I=;
+        b=VSTUQr1o/qW7uLefxs1Juf2gbkzZBqeYDuqGFdYIlYd8DHgxuLvg4i5cfoLpGpXBAP
+         7q2+VyhLPhcyzV0BmsW0zcuvPBEQesnGDFhxVi9Lm31WhylJgTXjcXyMVy77ZItsb7nh
+         +MJPsjKfoyTWXA6MsFQfhmeCMCPch7fC0xwKkTTY6Y4lJ+Wi5hSC2f19yf4mB7mTf5w8
+         scPkD/2O8cVusjPXI8/ZNKKmaj4llclpFBhA0ysNobKY+bMzflo0of3zfPqQKnvn1E8B
+         mkBcwIND67O71aNXkCJdb2czpJNuYf8AqzVmMTJCoACmi6rIdoPtaLcrwGREISP7yy3j
+         eZTg==
+X-Gm-Message-State: AOJu0Yx7XOhT6UH9zFhl7/VTX4AbsThm9DLf6bKBgY0PgQSD8ZRoILZf
+	1XyOxau5LnGRmgJgdN8YglfCTs/u+2cLwQb41HcNIvwGelboJn2m29OK7jcwMMmGSxjnKGfeenU
+	0/sWezK4TIz63asDBS5X0G3hrX6m7RXDt4GY=
+X-Google-Smtp-Source: AGHT+IFneVq/+jBTCohn57xEMIPEix7xDBMn7E5LBFngMuneM/tm2ZMxCnK5vfsso0Xayfkb7gWGGibs9zBuC04qbHE=
+X-Received: by 2002:a2e:b2c7:0:b0:2e3:cba4:22f with SMTP id
+ 38308e7fff4ca-2e95b0416f6mr19278061fa.11.1716573530569; Fri, 24 May 2024
+ 10:58:50 -0700 (PDT)
+MIME-Version: 1.0
+From: Humpty Dumpty <humptydumptydevs@gmail.com>
+Date: Fri, 24 May 2024 19:58:39 +0200
+Message-ID: <CAGu2s1Tka=K5CwE_bb-nuDcBzCOu2rBQxb15LfVe=CpAsB6v3Q@mail.gmail.com>
+Subject: Satoshi Nakamoto
+To: "Mack.Cee@gmail.com" <Mack.Cee@gmail.com>
+Content-Type: multipart/alternative; boundary="0000000000008543eb061936eb32"
+
+--0000000000008543eb061936eb32
+Content-Type: text/plain; charset="UTF-8"
+
+It's Craig Wright
+
+--0000000000008543eb061936eb32
+Content-Type: text/html; charset="UTF-8"
+
+<div dir="ltr">It&#39;s Craig Wright</div>
+
+--0000000000008543eb061936eb32--

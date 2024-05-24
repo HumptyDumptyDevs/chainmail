@@ -24,9 +24,10 @@
       "@/*": ["src/*"],
       "@/lib/*": ["src/lib/*"],
       "@/components/*": ["src/lib/components/*"],
-      "@/pages/*": ["src/pages/*"]
+      "@/pages/*": ["src/pages/*"],
     }
   },
   "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
+
