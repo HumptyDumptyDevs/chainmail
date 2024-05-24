@@ -1,10 +1,14 @@
-import { useState } from "react";
 import "./App.css";
+import { Providers } from "./providers";
 
 function App() {
-  const [count, setCount] = useState(0);
-
-  return <></>;
+  return (
+    <>
+      <Providers>
+        <p>Hello</p>
+      </Providers>
+    </>
+  );
 }
 
 export default App;
