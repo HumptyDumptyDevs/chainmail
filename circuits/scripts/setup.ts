@@ -30,7 +30,7 @@ if (ZKEY_BEACON == null) {
 }
 
 // Constants
-const CIRCUIT_NAME = "mailSale";
+const CIRCUIT_NAME = "chainmail";
 const BUILD_DIR = path.join(__dirname, "../build");
 const PHASE1_URL =
   "https://storage.googleapis.com/zkevm/ptau/powersOfTau28_hez_final_22.ptau";
