@@ -11,6 +11,16 @@ import {Verifier} from "./Verifier.sol";
  */
 contract Chainmail {
     //////////////
+    //  Types  //
+    /////////////
+
+    enum ListingStatus {
+        ACTIVE,
+        PENDING_DELIVERY,
+        FULFILLED
+    }
+
+    //////////////
     // Structs //
     ////////////
 
@@ -55,7 +65,7 @@ contract Chainmail {
     // Constructor //
     ////////////////
 
-    constructor(address _verifier, int256 _stakeOfAuthenticity) {
+    constructor(address _verifier, uint256 _stakeOfAuthenticity) {
         i_verifier = Verifier(_verifier);
         i_stakeOfAuthenticity = _stakeOfAuthenticity;
         s_listingId = 0;

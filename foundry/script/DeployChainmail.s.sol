@@ -17,6 +17,6 @@ contract DeployChainmail is Script {
         verifier = new Verifier();
         chainmail = new Chainmail(address(verifier), stakeOfAuthenticity);
         vm.stopBroadcast();
-        return (Chainmail, Verifier);
+        return (chainmail, verifier);
     }
 }
