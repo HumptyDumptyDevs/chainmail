@@ -1,0 +1,14 @@
+*.ptau
+
+circuits/*.zkey
+circuits/*.r1cs
+circuits/*.sym
+circuits/*.json
+circuits/mail-sale_js
+circuits/mail-sale_cpp
+circuits/build
+
+node_modules/
+
+
+

@@ -1,0 +1,23 @@
+{
+  "name": "chainmail",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@zk-email/circuits": "^6.0.3",
+    "@zk-email/contracts": "^6.0.3",
+    "@zk-email/helpers": "^6.0.3",
+    "typescript": "^5.4.5",
+    "snarkjs": "git+https://github.com/vb7401/snarkjs.git#24981febe8826b6ab76ae4d76cf7f9142919d2b8",
+    "ts-node": "^10.9.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.7"
+  }
+}
