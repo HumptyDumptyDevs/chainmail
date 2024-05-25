@@ -70,6 +70,8 @@ const AddListing = ({ proof, emailBody }: AddListingProps) => {
       // Update or add the email body for the current listing ID
       emailBodyMap[listingId!] = emailBody;
 
+      console.log(`Email body map: ${emailBodyMap}`);
+
       // Store the updated map in localStorage
       localStorage.setItem("emailBodyMap", JSON.stringify(emailBodyMap));
     } else if (isError) {

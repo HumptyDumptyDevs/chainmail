@@ -1,4 +1,4 @@
-import MyListings from "@/components/MyListings";
+import { MyListings } from "@/lib/components";
 
 export default function Home() {
   return (

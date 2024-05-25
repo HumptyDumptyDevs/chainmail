@@ -3,9 +3,9 @@ import {
   AddListing,
   VerifyProof,
   PublicSignals,
-} from "@/components/index";
+} from "@/lib/components";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const CreateListing = () => {
   //Look for localStorage proof
@@ -17,6 +17,10 @@ const CreateListing = () => {
   );
 
   const [emailBody, setEmailBody] = useState("");
+
+  useEffect(() => {
+    console.log("emailBody", emailBody);
+  }, [emailBody]);
 
   return (
     <>

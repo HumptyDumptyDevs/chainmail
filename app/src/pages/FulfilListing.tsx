@@ -1,16 +1,14 @@
 import { useEffect, useState } from "react";
 import { useChainmail } from "@/lib/context/ChainmailContext";
-import { BuyEmail, GeneratePgpKey, ListingInformation } from "@/lib/components";
+import { FulfilOrder } from "@/lib/components";
 import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-export default function Listing() {
+export default function FulfilListing() {
+  const navigate = useNavigate();
   const params = useParams();
   const chainmail = useChainmail();
   const [listing, setListing] = useState<ListingData | undefined>(undefined);
-  const [keys, setKeys] = useState<PGPKeyPair>({
-    privateKey: "",
-    publicKey: "",
-  });
 
   useEffect(() => {
     console.log(chainmail?.activeListings);
@@ -20,19 +18,25 @@ export default function Listing() {
     setListing(foundListing); // Set the found listing as state
   }, [chainmail?.activeListings, params.id]);
 
+  if (chainmail?.listingsLoading) {
+    return (
+      <div className="text-xl flex justify-center items-center text-text-2 h-96">
+        Loading...
+      </div>
+    );
+  }
+
   if (!listing) {
-    return <div>Loading...</div>;
+    navigate("/my-listings");
   }
 
   return (
-    <div className="p-10 flex flex-col gap-10">
-      <ListingInformation listing={listing} />
-      <GeneratePgpKey keys={keys} setKeys={setKeys} />
-      <BuyEmail
-        listingId={listing.id}
-        listingPrice={listing.price}
-        pgpPublicKey={keys.publicKey}
-      />
-    </div>
+    <>
+      {listing && (
+        <div className="p-10">
+          <FulfilOrder listing={listing} />
+        </div>
+      )}
+    </>
   );
 }

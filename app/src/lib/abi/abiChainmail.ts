@@ -83,11 +83,6 @@ export const abi = [
         "name": "_encryptedMailData",
         "type": "bytes",
         "internalType": "bytes"
-      },
-      {
-        "name": "_buyersPublicPgpKeyHash",
-        "type": "bytes32",
-        "internalType": "bytes32"
       }
     ],
     "outputs": [],
@@ -377,6 +372,62 @@ export const abi = [
   },
   {
     "type": "event",
+    "name": "ListingDelivered",
+    "inputs": [
+      {
+        "name": "listingId",
+        "type": "uint256",
+        "indexed": true,
+        "internalType": "uint256"
+      },
+      {
+        "name": "owner",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "buyer",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "encryptedMailData",
+        "type": "bytes",
+        "indexed": false,
+        "internalType": "bytes"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "ListingPurchased",
+    "inputs": [
+      {
+        "name": "listingId",
+        "type": "uint256",
+        "indexed": true,
+        "internalType": "uint256"
+      },
+      {
+        "name": "buyer",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "price",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
     "name": "ListingStatusChanged",
     "inputs": [
       {
@@ -396,6 +447,27 @@ export const abi = [
   },
   {
     "type": "error",
+    "name": "Chainmail__BuyerTransferFailed",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "Chainmail__InsufficientEthSent",
+    "inputs": [
+      {
+        "name": "_msgValue",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "_totalEthRequired",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ]
+  },
+  {
+    "type": "error",
     "name": "Chainmail__InsufficientStakeOfAuthenticity",
     "inputs": [
       {
@@ -412,12 +484,38 @@ export const abi = [
   },
   {
     "type": "error",
+    "name": "Chainmail__InvalidListingId",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "Chainmail__InvalidListingOwner",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "Chainmail__InvalidListingStatus",
+    "inputs": [
+      {
+        "name": "_status",
+        "type": "uint8",
+        "internalType": "enum Chainmail.ListingStatus"
+      }
+    ]
+  },
+  {
+    "type": "error",
     "name": "Chainmail__InvalidProof",
     "inputs": []
   },
   {
     "type": "error",
     "name": "Chainmail__MustBeMoreThanZero",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "Chainmail__OwnerTransferFailed",
     "inputs": []
   }
 ] as const;

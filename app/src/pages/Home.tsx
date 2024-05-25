@@ -1,4 +1,4 @@
-import AllListings from "@/components/AllListings";
+import { AllListings } from "@/lib/components";
 
 export default function Home() {
   return (

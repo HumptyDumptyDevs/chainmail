@@ -33,7 +33,6 @@ const GenerateZkProof = ({ setProof, setEmailBody }: GenerateZkProofProps) => {
             extractDKIMHeaderBodyHash(event.target?.result as string)
           );
           setEmailBody(extractEmailBody(event.target?.result as string));
-          localStorage.setItem("email", JSON.stringify(event.target?.result));
         };
         reader.readAsText(file);
         setFileName(file.name);
@@ -84,9 +83,6 @@ const GenerateZkProof = ({ setProof, setEmailBody }: GenerateZkProofProps) => {
         ...proof,
         pubSignals: publicSignals,
       };
-
-      setEmailBody(extractEmailBody(rawEmail));
-
       localStorage.setItem("proof", JSON.stringify(myProof));
       setProof(myProof);
       setGenerating(false);

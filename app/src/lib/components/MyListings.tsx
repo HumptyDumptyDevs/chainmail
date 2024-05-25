@@ -4,8 +4,10 @@ import { useEffect, useState } from "react";
 import ListingTable from "@/components/ListingTable";
 import StatusBadge from "@/components/StatusBadge";
 import { formatEther } from "viem";
+import { useNavigate } from "react-router-dom";
 
 const MyListings = () => {
+  const navigate = useNavigate();
   const account = useAccount();
   const chainmail = useChainmail();
   const [activeListings, setActiveListings] = useState<ListingData[]>([]);
@@ -61,6 +63,14 @@ const MyListings = () => {
     },
   ];
 
+  const fulfilRowActions = [
+    {
+      label: "Fulfil Order",
+      onClick: (listing: ListingData) =>
+        navigate(`/my-listings/fulfil/${listing.id}`),
+    },
+  ];
+
   return !account.address ? (
     <div className="text-center">
       <h1 className="text-2xl font-bold text-text2">
@@ -80,7 +90,13 @@ const MyListings = () => {
       <h1 className="text-2xl font-bold text-text2 mb-4">Pending Listings</h1>
       <div className="p-10 border border-primary1 bg-background3 shadow-xl rounded-lg mb-8">
         {pendingListings.length > 0 ? (
-          <ListingTable<ListingData> columns={columns} data={pendingListings} />
+          <ListingTable<ListingData>
+            columns={columns}
+            data={pendingListings}
+            getRowActions={() => {
+              return fulfilRowActions;
+            }}
+          />
         ) : (
           <div className="text-center">You don't have any pending listings</div>
         )}
