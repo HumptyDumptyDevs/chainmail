@@ -16,7 +16,10 @@ contract Chainmail {
 
     error Chainmail__MustBeMoreThanZero();
     error Chainmail__InvalidProof();
-    error Chainmail__InsufficientStakeOfAuthenticity(uint256 _msgValue, uint256 _stakeOfAuthenticity);
+    error Chainmail__InsufficientStakeOfAuthenticity(
+        uint256 _msgValue,
+        uint256 _stakeOfAuthenticity
+    );
 
     //////////////
     //  Types  //
@@ -38,7 +41,7 @@ contract Chainmail {
         uint256[3] pi_c;
         string protocol;
         string curve;
-        uint256[5] pubSignals;
+        uint256[6] pubSignals;
     }
 
     struct Listing {
@@ -78,8 +81,16 @@ contract Chainmail {
     // Events   //
     //////////////
 
-    event ListingCreated(uint256 indexed listingId, address indexed owner, string indexed description, uint256 price);
-    event ListingStatusChanged(uint256 indexed listingId, ListingStatus indexed status);
+    event ListingCreated(
+        uint256 indexed listingId,
+        address indexed owner,
+        string indexed description,
+        uint256 price
+    );
+    event ListingStatusChanged(
+        uint256 indexed listingId,
+        ListingStatus indexed status
+    );
 
     ///////////////
     // Modifiers //
@@ -116,24 +127,35 @@ contract Chainmail {
      *  @param description The description of the listing
      *  @param price The price of the listing
      */
-    function createListing(Proof memory _proof, string memory _description, uint256 _price)
-        public
-        payable
-        moreThanZero(msg.value)
-    {
-        uint256[5] memory pubSignals = _proof.pubSignals;
+    function createListing(
+        Proof memory _proof,
+        string memory _description,
+        uint256 _price
+    ) public payable moreThanZero(msg.value) {
+        uint256[6] memory pubSignals = _proof.pubSignals;
         uint256[2] memory proof_a = [_proof.pi_a[0], _proof.pi_a[1]];
-        uint256[2][2] memory proof_b = [[_proof.pi_b[0][1], _proof.pi_b[0][0]], [_proof.pi_b[1][1], _proof.pi_b[1][0]]];
+        uint256[2][2] memory proof_b = [
+            [_proof.pi_b[0][1], _proof.pi_b[0][0]],
+            [_proof.pi_b[1][1], _proof.pi_b[1][0]]
+        ];
         uint256[2] memory proof_c = [_proof.pi_c[0], _proof.pi_c[1]];
 
-        bool isValid = i_verifier.verifyProof(proof_a, proof_b, proof_c, pubSignals);
+        bool isValid = i_verifier.verifyProof(
+            proof_a,
+            proof_b,
+            proof_c,
+            pubSignals
+        );
 
         if (!isValid) {
             revert Chainmail__InvalidProof();
         }
 
         if (msg.value < i_stakeOfAuthenticity) {
-            revert Chainmail__InsufficientStakeOfAuthenticity(msg.value, i_stakeOfAuthenticity);
+            revert Chainmail__InsufficientStakeOfAuthenticity(
+                msg.value,
+                i_stakeOfAuthenticity
+            );
         }
 
         s_listings[s_listingId] = Listing({
@@ -165,11 +187,10 @@ contract Chainmail {
      *  @dev The buyer must send the exact amount of eth to purchase the listing
      *  Checks / Effects / Interactions:
      */
-    function purchaseListing(uint256 _listingId, bytes memory _buyersPublicPgpKey)
-        public
-        payable
-        moreThanZero(msg.value)
-    {}
+    function purchaseListing(
+        uint256 _listingId,
+        bytes memory _buyersPublicPgpKey
+    ) public payable moreThanZero(msg.value) {}
 
     /*
      * @notice Allows the owner to fulfil the listing when pending delivery
@@ -179,9 +200,11 @@ contract Chainmail {
      * by asking the seller to also provide a hash of the buyers public key, they are making a commitment to the public key they used
      * adding weight to the assumption that any form of deception would be intentional
      */
-    function fulfilListing(uint256 _listingId, bytes memory _encryptedMailData, bytes32 _buyersPublicPgpKeyHash)
-        public
-    {}
+    function fulfilListing(
+        uint256 _listingId,
+        bytes memory _encryptedMailData,
+        bytes32 _buyersPublicPgpKeyHash
+    ) public {}
 
     //////////////////////////////////////
     // Public & External View Functions //
@@ -205,11 +228,13 @@ contract Chainmail {
     }
 
     /*
-    * @notice Get all the listings where the address is the seller
-    * This function returns an array of listings where the msg.sender is the seller
-    * 
-    */
-    function getOwnersListings(address _owner) external view returns (Listing[] memory) {
+     * @notice Get all the listings where the address is the seller
+     * This function returns an array of listings where the msg.sender is the seller
+     *
+     */
+    function getOwnersListings(
+        address _owner
+    ) external view returns (Listing[] memory) {
         uint256 ownerCount = s_ownersListings[_owner].length;
         Listing[] memory ownersListings = new Listing[](ownerCount);
 
