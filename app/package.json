@@ -14,6 +14,7 @@
     "@tanstack/react-query": "^5.37.1",
     "@zk-email/helpers": "4.0.0",
     "react": "^18.2.0",
+    "react-countdown": "^2.3.5",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.23.1",
     "snarkjs": "https://github.com/sampritipanda/snarkjs.git#fef81fc51d17a734637555c6edbd585ecda02d9e",
