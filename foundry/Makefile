@@ -48,7 +48,7 @@ ifeq ($(findstring --network sepolia,$(ARGS)),--network sepolia)
 endif
 
 deploy:
-	@forge script script/DeployChainmail.s.sol:DeployChainmail $(NETWORK_ARGS)
+	@forge script script/DeployChainmail.s.sol:DeployChainmail --rpc-url $(RPC_URL) --sender $(ADDRESS) --account berlin --broadcast
 
 create-listing:
 	@forge script script/Interactions.s.sol:CreateListing $(NETWORK_ARGS) --sender $(DEFAULT_ANVIL_PUBLIC_KEY) -vvvv

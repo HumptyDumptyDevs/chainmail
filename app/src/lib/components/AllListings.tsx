@@ -58,6 +58,22 @@ const AllListings = () => {
     ];
   };
 
+  if (chainmail?.listingsLoading) {
+    return (
+      <div className="text-xl flex justify-center items-center text-text-2 h-96">
+        Loading...
+      </div>
+    );
+  }
+
+  if (!activeListings.length) {
+    return (
+      <div className="text-xl flex justify-center items-center text-text-2 h-96">
+        No Active Listings
+      </div>
+    );
+  }
+
   return (
     <ListingTable<ListingData>
       columns={columns}

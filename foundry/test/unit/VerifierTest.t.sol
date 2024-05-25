@@ -6,11 +6,13 @@ import {Verifier} from "../../src/Verifier.sol";
 import {DeployChainmail} from "../../script/DeployChainmail.s.sol";
 import {Chainmail} from "../../src/Chainmail.sol";
 import {Constants} from "../../script/Constants.s.sol";
+import {ChainmailDao} from "../../src/ChainmailDao.sol";
 
 contract VerfierTest is Test {
     Verifier verifier;
     Chainmail chainmail;
     Constants constants;
+    ChainmailDao dao;
 
     Chainmail.Proof public proof;
 
@@ -19,7 +21,7 @@ contract VerfierTest is Test {
         constants = new Constants();
         proof = constants.getProof();
 
-        (chainmail, verifier) = deploy.run();
+        (chainmail, verifier, dao) = deploy.run();
     }
 
     function testIsVerifierDeployed() external view {
@@ -30,18 +32,10 @@ contract VerfierTest is Test {
     function testVerifyProof() external view {
         uint256[6] memory pubSignals = proof.pubSignals;
         uint256[2] memory proof_a = [proof.pi_a[0], proof.pi_a[1]];
-        uint256[2][2] memory proof_b = [
-            [proof.pi_b[0][1], proof.pi_b[0][0]],
-            [proof.pi_b[1][1], proof.pi_b[1][0]]
-        ];
+        uint256[2][2] memory proof_b = [[proof.pi_b[0][1], proof.pi_b[0][0]], [proof.pi_b[1][1], proof.pi_b[1][0]]];
         uint256[2] memory proof_c = [proof.pi_c[0], proof.pi_c[1]];
 
-        bool result = verifier.verifyProof(
-            proof_a,
-            proof_b,
-            proof_c,
-            pubSignals
-        );
+        bool result = verifier.verifyProof(proof_a, proof_b, proof_c, pubSignals);
         console.log("result: ", result);
         assertTrue(result);
     }

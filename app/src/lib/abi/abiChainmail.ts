@@ -11,6 +11,11 @@ export const abi = [
         "name": "_stakeOfAuthenticity",
         "type": "uint256",
         "internalType": "uint256"
+      },
+      {
+        "name": "_chainmailDao",
+        "type": "address",
+        "internalType": "address"
       }
     ],
     "stateMutability": "nonpayable"
@@ -69,6 +74,24 @@ export const abi = [
     ],
     "outputs": [],
     "stateMutability": "payable"
+  },
+  {
+    "type": "function",
+    "name": "dispute",
+    "inputs": [
+      {
+        "name": "_listingId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "_buyersSecretPgpKey",
+        "type": "bytes",
+        "internalType": "bytes"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
   },
   {
     "type": "function",
@@ -310,6 +333,52 @@ export const abi = [
   },
   {
     "type": "function",
+    "name": "getDispute",
+    "inputs": [
+      {
+        "name": "_listingId",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "tuple",
+        "internalType": "struct Chainmail.Dispute",
+        "components": [
+          {
+            "name": "listingId",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "createdAt",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "buyersSecretPgpKey",
+            "type": "bytes",
+            "internalType": "bytes"
+          },
+          {
+            "name": "votesForOwner",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "votesForBuyer",
+            "type": "uint256",
+            "internalType": "uint256"
+          }
+        ]
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
     "name": "getOwnersListings",
     "inputs": [
       {
@@ -453,6 +522,37 @@ export const abi = [
     "stateMutability": "payable"
   },
   {
+    "type": "function",
+    "name": "resolve",
+    "inputs": [
+      {
+        "name": "_listingId",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "vote",
+    "inputs": [
+      {
+        "name": "buyerIsRight",
+        "type": "bool",
+        "internalType": "bool"
+      },
+      {
+        "name": "_listingId",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
     "type": "event",
     "name": "ListingCreated",
     "inputs": [
@@ -516,6 +616,56 @@ export const abi = [
   },
   {
     "type": "event",
+    "name": "ListingDisputeUpdated",
+    "inputs": [
+      {
+        "name": "listingId",
+        "type": "uint256",
+        "indexed": true,
+        "internalType": "uint256"
+      },
+      {
+        "name": "votesForOwner",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      },
+      {
+        "name": "votesForBuyer",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "ListingDisputed",
+    "inputs": [
+      {
+        "name": "listingId",
+        "type": "uint256",
+        "indexed": true,
+        "internalType": "uint256"
+      },
+      {
+        "name": "buyer",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "owner",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
     "name": "ListingPurchased",
     "inputs": [
       {
@@ -560,7 +710,17 @@ export const abi = [
   },
   {
     "type": "error",
+    "name": "Chainmail__AlreadyVoted",
+    "inputs": []
+  },
+  {
+    "type": "error",
     "name": "Chainmail__BuyerTransferFailed",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "Chainmail__DisputeDurationPassed",
     "inputs": []
   },
   {

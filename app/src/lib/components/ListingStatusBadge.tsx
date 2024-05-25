@@ -24,6 +24,11 @@ const ListingStatusBadge: React.FC<ListingStatusBadgeProps> = ({ status }) => {
         };
       case 3:
         return {
+          text: "Completed",
+          className: "badge badge-dark badge-outline whitespace-nowrap",
+        };
+      case 4:
+        return {
           text: "Disputed",
           className: "badge badge-error badge-outline whitespace-nowrap",
         };
