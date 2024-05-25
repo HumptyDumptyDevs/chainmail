@@ -20,6 +20,9 @@ contract Chainmail {
     error Chainmail__InvalidListingStatus(ListingStatus _status);
     error Chainmail__InvalidListingId();
     error Chainmail__InsufficientEthSent(uint256 _msgValue, uint256 _totalEthRequired);
+    error Chainmail__InvalidListingOwner();
+    error Chainmail__OwnerTransferFailed();
+    error Chainmail__BuyerTransferFailed();
 
     //////////////
     //  Types  //
@@ -84,6 +87,9 @@ contract Chainmail {
     event ListingCreated(uint256 indexed listingId, address indexed owner, string indexed description, uint256 price);
     event ListingStatusChanged(uint256 indexed listingId, ListingStatus indexed status);
     event ListingPurchased(uint256 indexed listingId, address indexed buyer, uint256 price);
+    event ListingDelivered(
+        uint256 indexed listingId, address indexed owner, address indexed buyer, bytes encryptedMailData
+    );
 
     ///////////////
     // Modifiers //
@@ -208,16 +214,49 @@ contract Chainmail {
     }
 
     /*
-     * @notice Allows the owner to fulfil the listing when pending delivery
-     * @param _listingId The id of the listing to fulfil
-     * @param encryptedMailData The encrypted mail data provided by the seller, encrypted with the buyers public key
-     * @notice Although we can't prove that the encryptedMailData is a valid pgp encrypted message signed with the buyers public key
-     * by asking the seller to also provide a hash of the buyers public key, they are making a commitment to the public key they used
-     * adding weight to the assumption that any form of deception would be intentional
-     */
-    function fulfilListing(uint256 _listingId, bytes memory _encryptedMailData, bytes32 _buyersPublicPgpKeyHash)
+    * @notice Allows the owner to fulfil the listing when pending delivery
+    * @param _listingId The id of the listing to fulfil
+    * @param encryptedMailData The encrypted mail data provided by the seller, encrypted with the buyers public key
+    * @notice Although we can't prove that the encryptedMailData is a valid pgp encrypted message signed with the buyers public key
+    * by asking the seller to also provide a hash of the buyers public key, they are making a commitment to the public key they used
+    * adding weight to the assumption that any form of deception would be intentional
+    */
+    function fulfilListing(uint256 _listingId, bytes memory _encryptedMailData)
         public
-    {}
+        isCorrectStatus(_listingId, ListingStatus.PENDING_DELIVERY)
+    {
+        //Can we verify that encryptedMailData is a valid pgp encrypted message signed with the buyers public key?
+        Listing storage listing = s_listings[_listingId];
+
+        if (listing.status != ListingStatus.PENDING_DELIVERY) {
+            revert Chainmail__InvalidListingStatus(listing.status);
+        }
+
+        if (msg.sender != listing.owner) {
+            revert Chainmail__InvalidListingOwner();
+        }
+
+        listing.encryptedMailData = _encryptedMailData;
+        listing.status = ListingStatus.FULFILLED;
+
+        emit ListingDelivered(_listingId, listing.owner, msg.sender, _encryptedMailData);
+        emit ListingStatusChanged(_listingId, ListingStatus.FULFILLED);
+
+        uint256 totalEthToSendToOwner = listing.price + listing.ownerStakeOfAuthenticity;
+
+        (bool ownerTransferSuccess,) = listing.owner.call{value: totalEthToSendToOwner}("");
+
+        if (!ownerTransferSuccess) {
+            revert Chainmail__OwnerTransferFailed(); // I am not sure if this is the right way to handle this
+        }
+
+        //Also refund the stake of authenticity to the buyer
+        (bool buyerTransferSuccess,) = listing.buyer.call{value: listing.buyerStakeOfAuthenticity}("");
+
+        if (!buyerTransferSuccess) {
+            revert Chainmail__BuyerTransferFailed(); // I am not sure if this is the right way to handle this
+        }
+    }
 
     //////////////////////////////////////
     // Public & External View Functions //
