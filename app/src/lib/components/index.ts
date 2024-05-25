@@ -16,3 +16,4 @@ export { default as MyListingOrders } from "./MyListingOrders";
 export { default as DecryptEmailBody } from "./DecryptEmailBody";
 export { default as ListingDisputes } from "./ListingDisputes";
 export { default as DisputeInformation } from "./DisputeInformation";
+export { default as DisputeVoting } from "./DisputeVoting";

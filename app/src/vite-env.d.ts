@@ -34,6 +34,7 @@ interface DisputeData {
   buyersSecretPgpKey: `0x${string}`;
   votesForOwner: bigint;
   votesForBuyer: bigint;
+  reason: string;
 }
 
 interface ListingData {

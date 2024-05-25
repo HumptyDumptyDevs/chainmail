@@ -6,13 +6,11 @@ import {Verifier} from "../../src/Verifier.sol";
 import {DeployChainmail} from "../../script/DeployChainmail.s.sol";
 import {Chainmail} from "../../src/Chainmail.sol";
 import {Constants} from "../../script/Constants.s.sol";
-import {ChainmailDao} from "../../src/ChainmailDao.sol";
 
 contract VerfierTest is Test {
     Verifier verifier;
     Chainmail chainmail;
     Constants constants;
-    ChainmailDao dao;
 
     Chainmail.Proof public proof;
 
@@ -21,7 +19,7 @@ contract VerfierTest is Test {
         constants = new Constants();
         proof = constants.getProof();
 
-        (chainmail, verifier, dao) = deploy.run();
+        (chainmail, verifier) = deploy.run();
     }
 
     function testIsVerifierDeployed() external view {
