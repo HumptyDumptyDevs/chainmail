@@ -419,9 +419,6 @@ contract Chainmail is ERC20, Ownable {
         }
 
         if (!s_Votes[msg.sender][_listingId].claimed) {
-            // amount of eth to claim
-
-
             if (s_disputes[_listingId].votesForBuyer > s_disputes[_listingId].votesForOwner) {
                 // Buyer wins
                 if (s_Votes[msg.sender][_listingId].buyerIsRight) {
