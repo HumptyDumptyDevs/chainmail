@@ -2,7 +2,7 @@ import ListingTable from "@/components/ListingTable";
 import { formatEther } from "viem";
 import StatusBadge from "@/components/StatusBadge";
 
-const Listings = () => {
+const AllListings = () => {
   // Sample data
   const listings = [
     {
@@ -64,4 +64,4 @@ const Listings = () => {
   );
 };
 
-export default Listings;
+export default AllListings;
