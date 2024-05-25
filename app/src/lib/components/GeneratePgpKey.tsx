@@ -36,29 +36,27 @@ const GeneratePgpKey = ({ keys, setKeys }: GeneratePgpKeyProps) => {
   };
 
   return (
-    <div className="p-5 flex gap-4 flex-col max-w-lg justify-center items-center mx-auto text-center">
+    <div className="p-5 flex gap-4 flex-col max-w-2xl justify-center items-center mx-auto text-center">
       <h1 className="font-bold text-text1 text-4xl">PGP Key</h1>
       <p className="text-text2 text-sm">
         Here is the PGP key that you will need to purchase the email
       </p>
-      <p className="text-text2 text-sm">
+      <p className="text-text2 text-sm font-extrabold">
         The seller will use the public key to encrypt the email so it is
         important you save the private key so you can decrypt your purchase
       </p>
       <div className="flex gap-4 w-full justify-center">
         <div className="flex-1 flex flex-col gap-2">
-          <h2 className="font-bold text-text1 text-lg text-center">
+          <h2 className="font-bold text-text1 text-lg text-left">
             Private Key
           </h2>
-          <div className="h-64 text-xs text-text1 border rounded-lg border-primary1 p-2 bg-background1">
+          <div className="h-64 text-xs text-text1 text-left border rounded-lg border-primary1 p-2 bg-background1">
             <pre>{keys?.privateKey}</pre>
           </div>
         </div>
         <div className="flex flex-1 flex-col gap-2">
-          <h2 className="font-bold text-text1 text-lg text-center">
-            Public Key
-          </h2>
-          <div className="h-64 text-text1 text-xs border rounded-lg border-primary1 p-2 bg-background1">
+          <h2 className="font-bold text-text1 text-lg text-left">Public Key</h2>
+          <div className="h-64 text-text1 text-xs text-left border rounded-lg border-primary1 p-2 bg-background1">
             <pre>{keys?.publicKey}</pre>
           </div>
         </div>

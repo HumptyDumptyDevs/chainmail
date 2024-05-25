@@ -38,7 +38,7 @@ const AllListings = () => {
     },
     {
       header: "Price",
-      accessor: (listing: ListingData) => `${formatEther(listing.price)} Ξ`,
+      accessor: (listing: ListingData) => `Ξ ${formatEther(listing.price)}`,
     },
     {
       header: "Status",
