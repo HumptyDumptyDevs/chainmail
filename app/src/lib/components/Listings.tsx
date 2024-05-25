@@ -2,15 +2,6 @@ import ListingTable from "@/components/ListingTable";
 import { formatEther } from "viem";
 import StatusBadge from "@/components/StatusBadge";
 
-interface Listings {
-  id: number;
-  from: string;
-  description: string;
-  price: string;
-  status: string;
-  timeRemaining: string;
-}
-
 const Listings = () => {
   // Sample data
   const listings = [
@@ -18,24 +9,32 @@ const Listings = () => {
       id: 1,
       from: "Jack",
       description: "Recipe for potions",
-      price: formatEther(1000000000000000000n),
+      price: "Ξ " + formatEther(1000000000000000000n),
       status: <StatusBadge status={0} />,
-      timeRemaining: "1 day",
+      createdAt: "1 day",
+    },
+    {
+      id: 2,
+      from: "Charlie",
+      description: "Recipe for antidotes",
+      price: "Ξ " + formatEther(2000000000000000000n),
+      status: <StatusBadge status={1} />,
+      createdAt: "1 day",
     },
   ];
 
   const columns = [
-    { header: "ID", accessor: (listing: Listings) => listing.id },
-    { header: "From", accessor: (listing: Listings) => listing.from },
+    { header: "ID", accessor: (listing: ListingData) => listing.id },
+    { header: "From", accessor: (listing: ListingData) => listing.owner },
     {
       header: "Description",
-      accessor: (listing: Listings) => listing.description,
+      accessor: (listing: ListingData) => listing.description,
     },
-    { header: "Price", accessor: (listing: Listings) => listing.price },
-    { header: "Status", accessor: (listing: Listings) => listing.status },
+    { header: "Price", accessor: (listing: ListingData) => listing.price },
+    { header: "Status", accessor: (listing: ListingData) => listing.status },
     {
       header: "Time Remaining",
-      accessor: (listing: Listings) => listing.timeRemaining,
+      accessor: (listing: ListingData) => listing.createdAt,
     },
   ];
 
@@ -57,7 +56,7 @@ const Listings = () => {
   ];
 
   return (
-    <ListingTable<Listings>
+    <ListingTable<ListingData>
       columns={columns}
       data={listings}
       getRowActions={getRowActions}

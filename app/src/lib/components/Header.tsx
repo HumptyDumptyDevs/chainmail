@@ -6,9 +6,11 @@ const Header = () => {
     <div className="p-10 w-full mx-auto flex justify-between">
       <div className="flex flex-grow flex-shrink-0 justify-start">
         <Link className="flex items-center" to="/">
-          <h1 className="text-center uppercase font-extrabold leading-loose text-4xl text-text1">
-            Chainmail
-          </h1>
+          <img
+            src="/chainmail_wordmark.png"
+            alt="Chainmail"
+            className="h-10 w-auto mx-auto" // Adjust height and width as needed
+          />
         </Link>
       </div>
       <div className="navbar flex-grow flex-shrink bg-base-100 flex justify-center ">
