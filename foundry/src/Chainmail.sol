@@ -17,6 +17,9 @@ contract Chainmail {
     error Chainmail__MustBeMoreThanZero();
     error Chainmail__InvalidProof();
     error Chainmail__InsufficientStakeOfAuthenticity(uint256 _msgValue, uint256 _stakeOfAuthenticity);
+    error Chainmail__InvalidListingStatus(ListingStatus _status);
+    error Chainmail__InvalidListingId();
+    error Chainmail__InsufficientEthSent(uint256 _msgValue, uint256 _totalEthRequired);
 
     //////////////
     //  Types  //
@@ -80,6 +83,7 @@ contract Chainmail {
 
     event ListingCreated(uint256 indexed listingId, address indexed owner, string indexed description, uint256 price);
     event ListingStatusChanged(uint256 indexed listingId, ListingStatus indexed status);
+    event ListingPurchased(uint256 indexed listingId, address indexed buyer, uint256 price);
 
     ///////////////
     // Modifiers //
@@ -87,6 +91,14 @@ contract Chainmail {
     modifier moreThanZero(uint256 _amount) {
         if (_amount <= 0) {
             revert Chainmail__MustBeMoreThanZero();
+        }
+        _;
+    }
+
+    modifier isCorrectStatus(uint256 _listingId, ListingStatus _status) {
+        ListingStatus status = s_listings[_listingId].status;
+        if (status != _status) {
+            revert Chainmail__InvalidListingStatus(status);
         }
         _;
     }
@@ -160,16 +172,40 @@ contract Chainmail {
     }
 
     /*
-     *  @notice Allows a buyer to purchase the listing
-     *  @param listingId The id of the listing
-     *  @dev The buyer must send the exact amount of eth to purchase the listing
-     *  Checks / Effects / Interactions:
-     */
+    *  @notice Allows a buyer to purchase the listing
+    *  @param listingId The id of the listing
+    *  @dev The buyer must send the exact amount of eth to purchase the listing
+    *  Checks / Effects / Interactions:
+    */
     function purchaseListing(uint256 _listingId, bytes memory _buyersPublicPgpKey)
         public
         payable
         moreThanZero(msg.value)
-    {}
+        isCorrectStatus(_listingId, ListingStatus.ACTIVE)
+    {
+        Listing storage listing = s_listings[_listingId];
+
+        if (listing.owner == address(0)) {
+            revert Chainmail__InvalidListingId();
+        }
+
+        uint256 totalEthRequired = listing.price + i_stakeOfAuthenticity;
+
+        if (msg.value < totalEthRequired) {
+            revert Chainmail__InsufficientEthSent(msg.value, totalEthRequired);
+        }
+
+        // Add the listing to the buyers listings
+        s_buyersListings[msg.sender].push(_listingId);
+
+        listing.status = ListingStatus.PENDING_DELIVERY;
+        listing.buyersPublicPgpKey = _buyersPublicPgpKey;
+        listing.buyer = msg.sender;
+        listing.buyerStakeOfAuthenticity = i_stakeOfAuthenticity;
+
+        emit ListingPurchased(_listingId, msg.sender, listing.price);
+        emit ListingStatusChanged(_listingId, ListingStatus.PENDING_DELIVERY);
+    }
 
     /*
      * @notice Allows the owner to fulfil the listing when pending delivery
