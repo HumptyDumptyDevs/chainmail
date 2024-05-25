@@ -1,10 +1,10 @@
 import React from "react";
 
-interface StatusBadgeProps {
+interface ListingStatusBadgeProps {
   status: number;
 }
 
-const StatusBadge: React.FC<StatusBadgeProps> = ({ status }) => {
+const ListingStatusBadge: React.FC<ListingStatusBadgeProps> = ({ status }) => {
   const getBadgeDetails = (status: number) => {
     switch (status) {
       case 0:
@@ -37,4 +37,4 @@ const StatusBadge: React.FC<StatusBadgeProps> = ({ status }) => {
   return <div className={className}>{text}</div>;
 };
 
-export default StatusBadge;
+export default ListingStatusBadge;

@@ -82,29 +82,29 @@ const AddListing = ({ proof, emailBody }: AddListingProps) => {
   }, [isConfirmed, isError, error]);
 
   return (
-    <div className="p-10 border border-primary1 bg-background3 shadow-xl rounded-lg w-96">
+    <div className="px-10 py-3 border border-primary1 bg-background3 shadow-xl rounded-lg w-1/3">
       <h1 className="text-2xl font-bold text-text2">Create Listing</h1>
       <div className="flex flex-col justify-center gap-4 mt-4">
         <div>
-          <h4 className="w-60 text-sm font-bold whitespace-nowrap">
+          <h4 className="w-60 pb-1 text-sm font-bold whitespace-nowrap">
             Description
           </h4>
-          <p className="italic text-xs">
-            Describe the kind of email you are listing. This will be public.
-          </p>
           <textarea
             value={newListingData.description}
+            placeholder="Provide a public description for the email you are listing."
             onChange={(e) => {
               setNewListingData({
                 ...newListingData,
                 description: e.target.value,
               });
             }}
-            className="textarea textarea-lg text-xs resize-none w-full h-40  border rounded-lg border-primary1 p-2 bg-background1"
+            className="textarea textarea-lg text-xs resize-none w-full h-32  border rounded-lg border-primary1 p-2 bg-background1"
           ></textarea>
         </div>
         <div>
-          <h4 className="w-60 text-sm font-bold whitespace-nowrap">Price</h4>
+          <h4 className="w-60 pb-1 text-sm font-bold whitespace-nowrap">
+            Price
+          </h4>
           <label className="border rounded-lg border-primary1 p-2 bg-background1 flex items-center gap-2">
             Ξ
             <input

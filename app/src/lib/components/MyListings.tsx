@@ -2,7 +2,7 @@ import { useAccount } from "wagmi";
 import { useChainmail } from "@/lib/context/ChainmailContext";
 import { useEffect, useState } from "react";
 import ListingTable from "@/components/ListingTable";
-import StatusBadge from "@/components/StatusBadge";
+import ListingStatusBadge from "@/components/ListingStatusBadge";
 import { formatEther } from "viem";
 import { useNavigate } from "react-router-dom";
 
@@ -58,7 +58,7 @@ const MyListings = () => {
     {
       header: "Status",
       accessor: (listing: ListingData) => (
-        <StatusBadge status={listing.status} />
+        <ListingStatusBadge status={listing.status} />
       ),
     },
   ];

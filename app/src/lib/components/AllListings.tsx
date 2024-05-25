@@ -1,6 +1,6 @@
 import ListingTable from "@/components/ListingTable";
 import { formatEther } from "viem";
-import StatusBadge from "@/components/StatusBadge";
+import ListingStatusBadge from "@/components/ListingStatusBadge";
 import { useChainmail } from "@/lib/context/ChainmailContext";
 import { useNavigate } from "react-router-dom";
 import * as decode from "@/lib/utils/decodePublicSignals";
@@ -43,7 +43,7 @@ const AllListings = () => {
     {
       header: "Status",
       accessor: (listing: ListingData) => (
-        <StatusBadge status={listing.status} />
+        <ListingStatusBadge status={listing.status} />
       ),
     },
   ];

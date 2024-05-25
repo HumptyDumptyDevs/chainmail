@@ -28,12 +28,20 @@ contract VerfierTest is Test {
     }
 
     function testVerifyProof() external view {
-        uint256[5] memory pubSignals = proof.pubSignals;
+        uint256[6] memory pubSignals = proof.pubSignals;
         uint256[2] memory proof_a = [proof.pi_a[0], proof.pi_a[1]];
-        uint256[2][2] memory proof_b = [[proof.pi_b[0][1], proof.pi_b[0][0]], [proof.pi_b[1][1], proof.pi_b[1][0]]];
+        uint256[2][2] memory proof_b = [
+            [proof.pi_b[0][1], proof.pi_b[0][0]],
+            [proof.pi_b[1][1], proof.pi_b[1][0]]
+        ];
         uint256[2] memory proof_c = [proof.pi_c[0], proof.pi_c[1]];
 
-        bool result = verifier.verifyProof(proof_a, proof_b, proof_c, pubSignals);
+        bool result = verifier.verifyProof(
+            proof_a,
+            proof_b,
+            proof_c,
+            pubSignals
+        );
         console.log("result: ", result);
         assertTrue(result);
     }

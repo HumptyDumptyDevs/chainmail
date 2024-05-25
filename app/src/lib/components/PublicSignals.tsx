@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import * as decode from "@/lib/utils/decodePublicSignals";
+import { verifyEmailBodyHash } from "../utils/verifyHash";
 
 type PublicSignalsProps = {
   pubSignals: Proof["pubSignals"] | undefined;
@@ -8,12 +9,14 @@ type PublicSignalsProps = {
 type DecodedPublicSignalsKey =
   | "emailHash"
   | "emailFrom"
+  | "emailSubject"
   | "emailPublicKey"
   | "address";
 
 const labels = {
   emailHash: "Email Body Hash",
   emailFrom: "Email From",
+  emailSubject: "Email Subject",
   emailPublicKey: "Public Key of Signing",
   address: "Owners Address",
 };
@@ -23,6 +26,7 @@ const PublicSignals = ({ pubSignals }: PublicSignalsProps) => {
     useState<DecodedPublicSignals>({
       emailHash: "",
       emailFrom: "",
+      emailSubject: "",
       emailPublicKey: "",
       address: "0x",
     });
@@ -30,17 +34,19 @@ const PublicSignals = ({ pubSignals }: PublicSignalsProps) => {
   useEffect(() => {
     if (pubSignals) {
       setDecodedPublicSignals({
+        emailFrom: decode.decimalToAscii(pubSignals[3].toString()),
+        emailSubject: decode.decimalToAscii(pubSignals[4].toString()),
         emailHash:
           decode.decimalToAscii(pubSignals[1].toString()) +
           decode.decimalToAscii(pubSignals[2].toString()),
-        emailFrom: decode.decimalToAscii(pubSignals[3].toString()),
         emailPublicKey: pubSignals[0].toString(),
-        address: decode.decimalToEthereumAddress(pubSignals[4].toString()),
+        address: decode.decimalToEthereumAddress(pubSignals[5].toString()),
       });
     } else {
       setDecodedPublicSignals({
         emailHash: "",
         emailFrom: "",
+        emailSubject: "",
         emailPublicKey: "",
         address: "0x",
       });

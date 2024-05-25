@@ -4,7 +4,7 @@ import { useAccount } from "wagmi";
 import { formatEther } from "viem";
 import ListingTable from "@/components/ListingTable";
 import { useNavigate } from "react-router-dom";
-import StatusBadge from "@/components/StatusBadge";
+import ListingStatusBadge from "@/components/ListingStatusBadge";
 
 const MyListingOrders = () => {
   const account = useAccount();
@@ -35,7 +35,7 @@ const MyListingOrders = () => {
     {
       header: "Status",
       accessor: (listing: ListingData) => (
-        <StatusBadge status={listing.status} />
+        <ListingStatusBadge status={listing.status} />
       ),
     },
   ];

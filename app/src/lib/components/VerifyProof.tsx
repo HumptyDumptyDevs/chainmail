@@ -19,7 +19,7 @@ const VerifyProof = ({ proof }: VerifyProofProps) => {
   return (
     <>
       <button
-        className="btn btn-primary"
+        className="btn btn-primary w-40"
         disabled={!proof}
         onClick={verifyEmailProof}
       >

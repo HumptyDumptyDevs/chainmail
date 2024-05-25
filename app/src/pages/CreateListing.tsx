@@ -31,17 +31,19 @@ const CreateListing = () => {
           </div>
         ) : (
           <>
-            <div className="flex justify-center">
-              <div className="flex flex-col gap-4 items-center">
+            <div className="flex justify-center gap-10">
+              <div className="flex flex-col gap-4 items-left">
                 <h1 className="text-2xl font-bold text-text2 mb-4">
                   Full Proof
                 </h1>
-                <div className="border h-60 w-2/3 rounded-lg border-primary1 p-2 bg-background1 mb-4 overflow-y-auto">
+                <div className="border h-60 rounded-lg border-primary1 p-2 bg-background1 mb-4 overflow-y-auto">
                   <pre className="text-xs">
                     {JSON.stringify(proof, null, 2)}
                   </pre>
                 </div>
-                <VerifyProof proof={proof} />
+                <div className="flex justify-center">
+                  <VerifyProof proof={proof} />
+                </div>
               </div>
               <div className="">
                 <PublicSignals pubSignals={proof?.pubSignals} />
