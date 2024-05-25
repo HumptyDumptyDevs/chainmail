@@ -1,11 +1,5 @@
 import { DecryptEmailBody, ListingInformation } from "@/lib/components";
 import { useChainmail } from "@/lib/context/ChainmailContext";
-import {
-  Description,
-  Dialog,
-  DialogPanel,
-  DialogTitle,
-} from "@headlessui/react";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
@@ -13,7 +7,7 @@ const ViewDispute = () => {
   const params = useParams();
   const chainmail = useChainmail();
   const [listing, setListing] = useState<ListingData | undefined>(undefined);
-  const [isOpen, setIsOpen] = useState(false);
+  const [pgpPrivateKey, setPgpPrivateKey] = useState<string>("");
 
   useEffect(() => {
     const foundListing = chainmail?.activeListings?.find(
@@ -26,7 +20,7 @@ const ViewDispute = () => {
     listing && ( // If listing is not undefined
       <div>
         <ListingInformation listing={listing} />
-        <DecryptEmailBody listing={listing} pgpPrivateKey />
+        <DecryptEmailBody listing={listing} pgpPrivateKey={pgpPrivateKey} />
       </div>
     )
   );

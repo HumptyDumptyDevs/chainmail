@@ -17,16 +17,10 @@ contract Chainmail {
 
     error Chainmail__MustBeMoreThanZero();
     error Chainmail__InvalidProof();
-    error Chainmail__InsufficientStakeOfAuthenticity(
-        uint256 _msgValue,
-        uint256 _stakeOfAuthenticity
-    );
+    error Chainmail__InsufficientStakeOfAuthenticity(uint256 _msgValue, uint256 _stakeOfAuthenticity);
     error Chainmail__InvalidListingStatus(ListingStatus _status);
     error Chainmail__InvalidListingId();
-    error Chainmail__InsufficientEthSent(
-        uint256 _msgValue,
-        uint256 _totalEthRequired
-    );
+    error Chainmail__InsufficientEthSent(uint256 _msgValue, uint256 _totalEthRequired);
     error Chainmail__InvalidListingOwner();
     error Chainmail__OwnerTransferFailed();
     error Chainmail__BuyerTransferFailed();
@@ -72,7 +66,6 @@ contract Chainmail {
         bytes buyersPublicPgpKey;
         bytes encryptedMailData;
         address buyer;
-
     }
 
     struct Dispute {
@@ -82,6 +75,7 @@ contract Chainmail {
         uint256 votesForOwner;
         uint256 votesForBuyer;
     }
+
     mapping(uint256 => mapping(address => bool)) private s_alreadyVoted;
 
     ////////////////////////
@@ -92,10 +86,8 @@ contract Chainmail {
     Verifier private i_verifier;
     uint256 private i_stakeOfAuthenticity;
 
-
     // Constants
-    uint256 DISPUTE_DURATION = 2 days;
-
+    uint256 constant DISPUTE_DURATION = 2 days;
 
     //Storage
 
@@ -106,46 +98,22 @@ contract Chainmail {
 
     uint256[] private s_activeListingIds; // Array of active listing ids so we can loop through them
 
-
     // Disputes
     mapping(uint256 listingId => Dispute dispute) private s_disputes;
-
 
     // DAO
     ChainmailDao private i_chainmailDao;
 
-
     ///////////////
     // Events   //
     //////////////
-<<<<<<< HEAD
-
-    event ListingCreated(
-        uint256 indexed listingId,
-        address indexed owner,
-        string indexed description,
-        uint256 price
-    );
-    event ListingStatusChanged(
-        uint256 indexed listingId,
-        ListingStatus indexed status
-    );
-    event ListingPurchased(
-        uint256 indexed listingId,
-        address indexed buyer,
-        uint256 price
-    );
-=======
     event ListingCreated(uint256 indexed listingId, address indexed owner, string indexed description, uint256 price);
     event ListingStatusChanged(uint256 indexed listingId, ListingStatus indexed status);
     event ListingPurchased(uint256 indexed listingId, address indexed buyer, uint256 price);
->>>>>>> origin/fedor
     event ListingDelivered(
-        uint256 indexed listingId,
-        address indexed owner,
-        address indexed buyer,
-        bytes encryptedMailData
+        uint256 indexed listingId, address indexed owner, address indexed buyer, bytes encryptedMailData
     );
+    event ListingDisputed(uint256 indexed listingId, address indexed buyer, address indexed owner);
 
     ///////////////
     // Modifiers //
@@ -191,35 +159,24 @@ contract Chainmail {
      *  @param description The description of the listing
      *  @param price The price of the listing
      */
-    function createListing(
-        Proof memory _proof,
-        string memory _description,
-        uint256 _price
-    ) public payable moreThanZero(msg.value) {
+    function createListing(Proof memory _proof, string memory _description, uint256 _price)
+        public
+        payable
+        moreThanZero(msg.value)
+    {
         uint256[6] memory pubSignals = _proof.pubSignals;
         uint256[2] memory proof_a = [_proof.pi_a[0], _proof.pi_a[1]];
-        uint256[2][2] memory proof_b = [
-            [_proof.pi_b[0][1], _proof.pi_b[0][0]],
-            [_proof.pi_b[1][1], _proof.pi_b[1][0]]
-        ];
+        uint256[2][2] memory proof_b = [[_proof.pi_b[0][1], _proof.pi_b[0][0]], [_proof.pi_b[1][1], _proof.pi_b[1][0]]];
         uint256[2] memory proof_c = [_proof.pi_c[0], _proof.pi_c[1]];
 
-        bool isValid = i_verifier.verifyProof(
-            proof_a,
-            proof_b,
-            proof_c,
-            pubSignals
-        );
+        bool isValid = i_verifier.verifyProof(proof_a, proof_b, proof_c, pubSignals);
 
         if (!isValid) {
             revert Chainmail__InvalidProof();
         }
 
         if (msg.value < i_stakeOfAuthenticity) {
-            revert Chainmail__InsufficientStakeOfAuthenticity(
-                msg.value,
-                i_stakeOfAuthenticity
-            );
+            revert Chainmail__InsufficientStakeOfAuthenticity(msg.value, i_stakeOfAuthenticity);
         }
 
         s_listings[s_listingId] = Listing({
@@ -251,10 +208,7 @@ contract Chainmail {
      *  @dev The buyer must send the exact amount of eth to purchase the listing
      *  Checks / Effects / Interactions:
      */
-    function purchaseListing(
-        uint256 _listingId,
-        bytes memory _buyersPublicPgpKey
-    )
+    function purchaseListing(uint256 _listingId, bytes memory _buyersPublicPgpKey)
         public
         payable
         moreThanZero(msg.value)
@@ -292,10 +246,10 @@ contract Chainmail {
      * by asking the seller to also provide a hash of the buyers public key, they are making a commitment to the public key they used
      * adding weight to the assumption that any form of deception would be intentional
      */
-    function fulfilListing(
-        uint256 _listingId,
-        bytes memory _encryptedMailData
-    ) public isCorrectStatus(_listingId, ListingStatus.PENDING_DELIVERY) {
+    function fulfilListing(uint256 _listingId, bytes memory _encryptedMailData)
+        public
+        isCorrectStatus(_listingId, ListingStatus.PENDING_DELIVERY)
+    {
         //Can we verify that encryptedMailData is a valid pgp encrypted message signed with the buyers public key?
         Listing storage listing = s_listings[_listingId];
 
@@ -310,29 +264,19 @@ contract Chainmail {
         listing.encryptedMailData = _encryptedMailData;
         listing.status = ListingStatus.FULFILLED;
 
-        emit ListingDelivered(
-            _listingId,
-            listing.owner,
-            msg.sender,
-            _encryptedMailData
-        );
+        emit ListingDelivered(_listingId, listing.owner, msg.sender, _encryptedMailData);
         emit ListingStatusChanged(_listingId, ListingStatus.FULFILLED);
 
-        uint256 totalEthToSendToOwner = listing.price +
-            listing.ownerStakeOfAuthenticity;
+        uint256 totalEthToSendToOwner = listing.price + listing.ownerStakeOfAuthenticity;
 
-        (bool ownerTransferSuccess, ) = listing.owner.call{
-            value: totalEthToSendToOwner
-        }("");
+        (bool ownerTransferSuccess,) = listing.owner.call{value: totalEthToSendToOwner}("");
 
         if (!ownerTransferSuccess) {
             revert Chainmail__OwnerTransferFailed(); // I am not sure if this is the right way to handle this
         }
 
         //Also refund the stake of authenticity to the buyer
-        (bool buyerTransferSuccess, ) = listing.buyer.call{
-            value: listing.buyerStakeOfAuthenticity
-        }("");
+        (bool buyerTransferSuccess,) = listing.buyer.call{value: listing.buyerStakeOfAuthenticity}("");
 
         if (!buyerTransferSuccess) {
             revert Chainmail__BuyerTransferFailed(); // I am not sure if this is the right way to handle this
@@ -365,9 +309,7 @@ contract Chainmail {
      * This function returns an array of listings where the msg.sender is the seller
      *
      */
-    function getOwnersListings(
-        address _owner
-    ) external view returns (Listing[] memory) {
+    function getOwnersListings(address _owner) external view returns (Listing[] memory) {
         uint256 ownerCount = s_ownersListings[_owner].length;
         Listing[] memory ownersListings = new Listing[](ownerCount);
 
@@ -384,9 +326,7 @@ contract Chainmail {
      * This function returns an array of listings where the is the buyer
      *
      */
-    function getBuyersListings(
-        address _buyer
-    ) external view returns (Listing[] memory) {
+    function getBuyersListings(address _buyer) external view returns (Listing[] memory) {
         uint256 buyerCount = s_buyersListings[_buyer].length;
         Listing[] memory buyersListings = new Listing[](buyerCount);
 
@@ -402,12 +342,6 @@ contract Chainmail {
         return i_stakeOfAuthenticity;
     }
 
-
-
-
-
-
-
     ///////////////
     // Dispute   //
     //////////////
@@ -417,8 +351,7 @@ contract Chainmail {
             revert Chainmail__InvalidListingStatus(s_listings[_listingId].status);
         }
 
-        if (msg.sender != s_listings[_listingId].buyer ||
-            msg.sender != s_listings[_listingId].owner) {
+        if (msg.sender != s_listings[_listingId].buyer || msg.sender != s_listings[_listingId].owner) {
             revert Chainmail__InvalidListingOwner();
         }
 
@@ -432,6 +365,9 @@ contract Chainmail {
 
         s_disputes[_listingId] = _dispute;
         s_listings[_listingId].status = ListingStatus.DISPUTED;
+
+        emit ListingStatusChanged(_listingId, ListingStatus.DISPUTED);
+        emit ListingDisputed(_listingId, s_listings[_listingId].buyer, s_listings[_listingId].owner);
     }
 
     function vote(bool buyerIsRight, uint256 _listingId) public {
@@ -461,8 +397,8 @@ contract Chainmail {
             revert Chainmail__InvalidListingStatus(s_listings[_listingId].status);
         }
 
-        address payable buyer =payable(s_listings[_listingId].buyer);
-        address payable owner =payable(s_listings[_listingId].owner);
+        address payable buyer = payable(s_listings[_listingId].buyer);
+        address payable owner = payable(s_listings[_listingId].owner);
         address payable dao = payable(address(i_chainmailDao));
 
         if (s_disputes[_listingId].votesForBuyer > s_disputes[_listingId].votesForOwner) {
@@ -478,4 +414,7 @@ contract Chainmail {
         s_listings[_listingId].status = ListingStatus.COMPLETED;
     }
 
+    function getDispute(uint256 _listingId) public view returns (Dispute memory) {
+        return s_disputes[_listingId];
+    }
 }

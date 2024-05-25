@@ -2,9 +2,8 @@ import { useState, useEffect } from "react";
 import { useChainmail } from "@/lib/context/ChainmailContext";
 import { useAccount } from "wagmi";
 import { formatEther } from "viem";
-import ListingTable from "@/components/ListingTable";
+import { ListingTable, ListingStatusBadge } from "@/lib/components";
 import { useNavigate } from "react-router-dom";
-import StatusBadge from "@/components/StatusBadge";
 
 const MyListingOrders = () => {
   const account = useAccount();
@@ -14,7 +13,7 @@ const MyListingOrders = () => {
 
   useEffect(() => {
     const disputedListings = chainmail?.activeListings?.filter(
-      (listing) => listing.buyer === account.address && listing.status === 3
+      (listing) => listing.buyer === account.address && listing.status === 4
     );
     if (disputedListings) {
       setDisputes(disputedListings);
@@ -34,7 +33,7 @@ const MyListingOrders = () => {
     {
       header: "Status",
       accessor: (listing: ListingData) => (
-        <StatusBadge status={listing.status} />
+        <ListingStatusBadge status={listing.status} />
       ),
     },
     {

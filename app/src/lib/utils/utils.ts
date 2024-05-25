@@ -68,6 +68,8 @@ export const mapListingStatus = (status: number) => {
     case 2:
       return "Fulfilled";
     case 3:
+      return "Completed";
+    case 4:
       return "Disputed";
     default:
       return "Unknown";

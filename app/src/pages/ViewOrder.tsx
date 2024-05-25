@@ -8,13 +8,41 @@ import {
 } from "@headlessui/react";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { abi } from "@/lib/abi/abiChainmail";
+import {
+  useWriteContract,
+  useWaitForTransactionReceipt,
+  type BaseError,
+} from "wagmi";
+import { convertStringToHex } from "@/lib/utils/utils";
 
 const ViewOrder = () => {
   const params = useParams();
+  const { data: hash, error, isPending, writeContract } = useWriteContract();
   const chainmail = useChainmail();
   const [listing, setListing] = useState<ListingData | undefined>(undefined);
   const [isOpen, setIsOpen] = useState(false);
-  const [privateKey, setPrivateKey] = useState<string>("");
+  const [pgpPrivateKey, setPgpPrivateKey] = useState<string>("");
+
+  const openDispute = async () => {
+    if (!listing) return;
+
+    //convert the pgpPrivateKey to hex
+    const pgpPrivateKeyHex = convertStringToHex(pgpPrivateKey);
+
+    console.log(`Disputing listing ${listing.id}`);
+    console.log(
+      `With address ${import.meta.env.VITE_CHAINMAIL_CONTRACT_ADDRESS}`
+    );
+    console.log(`With pgpPrivateKey ${pgpPrivateKeyHex}`);
+
+    writeContract({
+      address: import.meta.env.VITE_CHAINMAIL_CONTRACT_ADDRESS as `0x${string}`,
+      abi,
+      functionName: "dispute",
+      args: [listing.id, pgpPrivateKeyHex as `0x${string}`],
+    });
+  };
 
   useEffect(() => {
     const foundListing = chainmail?.buyersListings?.find(
@@ -25,16 +53,30 @@ const ViewOrder = () => {
     const pgpKeyPair = localStorage.getItem("pgpKeyPair");
     if (pgpKeyPair) {
       const keys = JSON.parse(pgpKeyPair);
-      setPrivateKey(keys.privateKey);
+      setPgpPrivateKey(keys.privateKey);
     }
   }, [chainmail?.buyersListings, params.id]);
+
+  const {
+    isLoading: isConfirming,
+    isSuccess: isConfirmed,
+    isError,
+  } = useWaitForTransactionReceipt({
+    hash,
+  });
+
+  useEffect(() => {
+    if (isConfirmed) {
+      setIsOpen(false);
+    }
+  }, [isConfirmed]);
 
   return (
     listing && ( // If listing is not undefined
       <div>
         <ListingInformation listing={listing} />
         {listing.status === 2 && (
-          <DecryptEmailBody listing={listing} pgpPrivateKey={privateKey} />
+          <DecryptEmailBody listing={listing} pgpPrivateKey={pgpPrivateKey} />
         )}
         <div className="flex justify-center mb-10">
           <button className="btn btn-error" onClick={() => setIsOpen(true)}>
@@ -61,12 +103,20 @@ const ViewOrder = () => {
                 >
                   Cancel
                 </button>
-                <button
-                  className="btn btn-primary"
-                  onClick={() => setIsOpen(false)}
-                >
+                <button className="btn btn-primary" onClick={openDispute}>
                   Open
                 </button>
+                <div className="break-all">
+                  {hash && <div>Transaction Hash: {hash}</div>}
+                  {isConfirming && <div>Waiting for confirmation...</div>}
+                  {isConfirmed && <div>Transaction confirmed.</div>}
+                  {error && (
+                    <div>
+                      Error:{" "}
+                      {(error as BaseError).shortMessage || error.message}
+                    </div>
+                  )}
+                </div>
               </div>
             </DialogPanel>
           </div>

@@ -1,4 +1,3 @@
-import React from "react";
 import { ListingDisputes } from "@/lib/components";
 
 const Disputes = () => {

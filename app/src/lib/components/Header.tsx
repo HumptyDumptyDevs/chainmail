@@ -35,7 +35,10 @@ const Header = () => {
         >
           My Orders
         </Link>
-        <Link className="btn btn-ghost link link-primary" to={`/disputes`}>
+        <Link
+          className="btn btn-ghost link link-primary uppercase"
+          to={`/disputes`}
+        >
           Disputes
         </Link>
       </div>
