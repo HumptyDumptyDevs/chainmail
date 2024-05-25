@@ -3,12 +3,17 @@ import { useAccount } from "wagmi";
 import { generateKeyPair } from "@/lib/utils/pgp";
 
 type GeneratePgpKeyProps = {
+  listingId: number;
   keys: PGPKeyPair;
   setKeys: (keys: PGPKeyPair) => void;
 };
 
-const GeneratePgpKey = ({ keys, setKeys }: GeneratePgpKeyProps) => {
-  const pgpKeyPair = localStorage.getItem("pgpKeyPair");
+const GeneratePgpKey = ({ listingId, keys, setKeys }: GeneratePgpKeyProps) => {
+  // const pgpKeyPair = localStorage.getItem("pgpKeyPair");
+
+  // Retrieve existing key pair map or initialize an empty object
+  let pgpKeyPairMap = JSON.parse(localStorage.getItem("pgpKeyPairMap") || "{}");
+
   const account = useAccount();
 
   useEffect(() => {
@@ -16,23 +21,36 @@ const GeneratePgpKey = ({ keys, setKeys }: GeneratePgpKeyProps) => {
   }, []);
 
   const generatePgpKey = async () => {
-    if (pgpKeyPair) {
+    if (pgpKeyPairMap.hasOwnProperty(listingId)) {
+      console.log(`Listing ID ${listingId} found.`);
+      let pgpKeyPair = pgpKeyPairMap[listingId];
+      console.log(pgpKeyPair);
       const keys = JSON.parse(pgpKeyPair);
       console.log("Setting keys from storage");
       setKeys(keys);
       return;
     }
 
-    const { privateKey, publicKey } = await generateKeyPair(
-      account?.address || ""
-    );
+    if (!pgpKeyPairMap.hasOwnProperty(listingId)) {
+      const { privateKey, publicKey } = await generateKeyPair(
+        account?.address || ""
+      );
 
-    localStorage.setItem(
-      "pgpKeyPair",
-      JSON.stringify({ privateKey, publicKey })
-    );
+      // Create a new map with the existing pairs AND the new one
+      const updatedPgpKeyPairMap = {
+        ...pgpKeyPairMap, // Spread existing key pairs
+        [listingId]: JSON.stringify({ privateKey, publicKey }),
+      };
 
-    setKeys({ privateKey, publicKey });
+      console.log(updatedPgpKeyPairMap);
+
+      localStorage.setItem(
+        "pgpKeyPairMap",
+        JSON.stringify(updatedPgpKeyPairMap)
+      ); // Store entire map
+
+      setKeys({ privateKey, publicKey });
+    }
   };
 
   return (

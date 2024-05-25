@@ -52,7 +52,7 @@ function ListingInformation({ listing }: ListingInformationProps) {
               </ItemDetail>
             </div>
           </div>
-          <div className="h-full  flex items-center justify-center">
+          <div className="h-full flex items-center justify-center">
             <button
               className="btn btn-secondary w-40"
               onClick={() => setIsOpen(true)}
@@ -67,7 +67,7 @@ function ListingInformation({ listing }: ListingInformationProps) {
             className="relative z-50"
           >
             <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
-              <DialogPanel className="max-w-lg space-y-4 border bg-background3 p-12">
+              <DialogPanel className="max-w-4xl space-y-4 border bg-background3 p-12">
                 <DialogTitle className="font-bold">Proof data</DialogTitle>
                 <Description>
                   <div className="border flex-grow rounded-lg border-primary1 p-2 bg-background1 mb-4 overflow-y-auto">
