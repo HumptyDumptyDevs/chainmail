@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { decryptMessage } from "@/lib/utils/pgp";
 import { convertHexToString } from "@/lib/utils/utils";
 import { verifyEmailBodyHash } from "@/lib/utils/verifyHash";
@@ -7,9 +7,10 @@ import { ToastContainer, toast } from "react-toastify";
 
 type DisputeInformationProps = {
   listing: ListingData;
+  dispute: DisputeData;
 };
 
-const DecryptEmailBody = ({ listing }: DisputeInformationProps) => {
+const DecryptEmailBody = ({ listing, dispute }: DisputeInformationProps) => {
   const [decryptedEmailBody, setDecryptedEmailBody] = useState<string>("");
   const [calculatedBodyHash, setCalculatedBodyHash] = useState<string>("");
 
@@ -19,8 +20,10 @@ const DecryptEmailBody = ({ listing }: DisputeInformationProps) => {
     );
 
     try {
-      const decrypted = await decryptMessage(encryptedMailData, privateKey);
-
+      const decrypted = await decryptMessage(
+        encryptedMailData,
+        convertHexToString(dispute.buyersSecretPgpKey)
+      );
       setDecryptedEmailBody(decrypted as string);
     } catch (error) {
       console.error(error);
@@ -38,42 +41,34 @@ const DecryptEmailBody = ({ listing }: DisputeInformationProps) => {
         decryptedEmailBody,
         listingBodyHash
       );
-
-      if (success) {
-        toast.success("Body hash matches");
-      } else {
-        toast.error("Body hash does not match");
-      }
     } catch (error) {
       console.error(error);
-      toast.error("Error verifying body hash");
     }
 
     setCalculatedBodyHash(listingBodyHash);
   };
 
+  useEffect(() => {
+    decryptEmailBody();
+  }, []);
+
   return (
     <div className="p-10">
       <h1 className="font-bold text-center text-text1 text-4xl">
-        Decrypt your email
+        Dispute Information
       </h1>
       <div className="flex w-full justify-center">
         <div className="p-5 flex gap-4 flex-col max-w-lg justify-center items-center">
           <div className="flex flex-col gap-2">
             <h2 className="font-bold text-text1 text-lg text-center">
-              Private Key
+              Buyers Private Key
             </h2>
             <textarea
               className="min-w-64 text-sm h-64 border rounded-lg border-primary1 p-2 bg-background1 textarea textarea-lg "
-              value={privateKey}
-              onChange={onPrivateKeyChange}
+              readOnly
+              value={convertHexToString(dispute.buyersSecretPgpKey)}
             ></textarea>
           </div>
-        </div>
-        <div className="flex items-center">
-          <button onClick={decryptEmailBody} className="btn btn-primary">
-            Decrypt
-          </button>
         </div>
         <div className="p-5 flex gap-4 flex-col max-w-lg justify-center items-center">
           <div className="flex flex-col gap-2">
@@ -92,15 +87,7 @@ const DecryptEmailBody = ({ listing }: DisputeInformationProps) => {
         className={` ${
           !!decryptedEmailBody ? "flex flex-col items-center" : "hidden"
         }  `}
-      >
-        <button onClick={verifyBodyHash} className="btn btn-primary mt-10">
-          Verify Body Hash
-        </button>
-        {/* {calculatedBodyHash && (
-          <pre> Calculated Body Hash: {calculatedBodyHash}</pre>
-        )} */}
-      </div>
-      <ToastContainer />
+      ></div>
     </div>
   );
 };
