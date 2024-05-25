@@ -7,8 +7,8 @@ type ItemDetailProps = {
 
 const ItemDetail = ({ title, children }: ItemDetailProps) => {
   return (
-    <div className="flex justify-center">
-      <h3 className="w-1/3 font-bold flex justify-end mr-10 whitespace-nowrap">
+    <div className="flex justify-center items-center">
+      <h3 className="w-1/6 font-bold flex justify-end mr-10 whitespace-nowrap">
         {title}:
       </h3>
       <div className="w-full border rounded-lg overflow-auto border-primary1 p-2 bg-background1">

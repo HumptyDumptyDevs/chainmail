@@ -27,7 +27,11 @@ export default function Listing() {
   return (
     <div className="p-10 flex flex-col gap-10">
       <ListingInformation listing={listing} />
-      <GeneratePgpKey keys={keys} setKeys={setKeys} />
+      <GeneratePgpKey
+        listingId={Number(listing.id)}
+        keys={keys}
+        setKeys={setKeys}
+      />
       <BuyEmail
         listingId={listing.id}
         listingPrice={listing.price}

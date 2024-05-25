@@ -45,7 +45,7 @@ const BuyEmail = ({ listingId, pgpPublicKey, listingPrice }: BuyEmailProps) => {
       >
         {isPending ? "Confirming..." : "Buy Email"}
       </button>
-      <div>
+      <div className="pt-4">
         {hash && <div>Transaction Hash: {hash}</div>}
         {isConfirming && <div>Waiting for confirmation...</div>}
         {isConfirmed && <div>Transaction confirmed.</div>}
