@@ -1,64 +1,67 @@
 import ListingTable from "@/components/ListingTable";
 import { formatEther } from "viem";
 import StatusBadge from "@/components/StatusBadge";
+import { useChainmail } from "@/lib/context/ChainmailContext";
+import { useNavigate } from "react-router-dom";
+import * as decode from "@/lib/utils/decodePublicSignals";
+import { useEffect, useState } from "react";
+import MailIcon from "./icons/MailIcon";
 
 const AllListings = () => {
-  // Sample data
-  const listings = [
-    {
-      id: 1,
-      from: "Jack",
-      description: "Recipe for potions",
-      price: "Ξ " + formatEther(1000000000000000000n),
-      status: <StatusBadge status={0} />,
-      createdAt: "1 day",
-    },
-    {
-      id: 2,
-      from: "Charlie",
-      description: "Recipe for antidotes",
-      price: "Ξ " + formatEther(2000000000000000000n),
-      status: <StatusBadge status={1} />,
-      createdAt: "1 day",
-    },
-  ];
+  const chainmail = useChainmail();
+  const navigate = useNavigate();
+  const [activeListings, setActiveListings] = useState<ListingData[]>([]);
+
+  useEffect(() => {
+    console.log(chainmail?.activeListings);
+    const nonExpiredListings = chainmail?.activeListings?.filter(
+      (listing) => listing.status === 0
+    );
+    if (nonExpiredListings) {
+      setActiveListings(nonExpiredListings);
+    }
+  }, [chainmail?.activeListings]);
+
+  console.log(activeListings);
 
   const columns = [
-    { header: "ID", accessor: (listing: ListingData) => listing.id },
-    { header: "From", accessor: (listing: ListingData) => listing.owner },
+    { header: "", accessor: () => <MailIcon classList="w-14 stroke-text3" /> },
+    { header: "ID", accessor: (listing: ListingData) => listing.id.toString() },
+    {
+      header: "From",
+      accessor: (listing: ListingData) =>
+        decode.decimalToAscii(listing.proof.pubSignals[3].toString()),
+    },
     {
       header: "Description",
       accessor: (listing: ListingData) => listing.description,
     },
-    { header: "Price", accessor: (listing: ListingData) => listing.price },
-    { header: "Status", accessor: (listing: ListingData) => listing.status },
     {
-      header: "Time Remaining",
-      accessor: (listing: ListingData) => listing.createdAt,
+      header: "Price",
+      accessor: (listing: ListingData) => `${formatEther(listing.price)} Ξ`,
+    },
+    {
+      header: "Status",
+      accessor: (listing: ListingData) => (
+        <StatusBadge status={listing.status} />
+      ),
     },
   ];
 
-  // Define your row actions (optional)
-  interface Listings {
-    id: number;
-    from: string;
-    description: string;
-    price: string;
-    status: JSX.Element; // Update the type of 'status' property
-    timeRemaining: string;
-  }
-
-  const getRowActions = (listing: Listings) => [
-    {
-      label: "Buy",
-      onClick: (listing: Listings) => console.log("Buy listing:", listing),
-    },
-  ];
+  const getRowActions = (listing: ListingData) => {
+    console.log(listing);
+    return [
+      {
+        label: "Buy",
+        onClick: () => navigate(`/listing/${listing.id}`),
+      },
+    ];
+  };
 
   return (
     <ListingTable<ListingData>
       columns={columns}
-      data={listings}
+      data={activeListings}
       getRowActions={getRowActions}
     />
   );
