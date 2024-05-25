@@ -29,6 +29,9 @@ const Header = () => {
         <Link className="btn btn-ghost link link-primary" to={`/my-orders`}>
           My Orders
         </Link>
+        <Link className="btn btn-ghost link link-primary" to={`/disputes`}>
+          Disputes
+        </Link>
       </div>
       <div className="flex flex-grow flex-shrink-0 items-center justify-end">
         <ConnectButton

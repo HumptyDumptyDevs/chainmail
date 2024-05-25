@@ -67,6 +67,8 @@ export const mapListingStatus = (status: number) => {
       return "Pending-Delivery";
     case 2:
       return "Fulfilled";
+    case 3:
+      return "Disputed";
     default:
       return "Unknown";
   }

@@ -14,19 +14,28 @@ const ViewOrder = () => {
   const chainmail = useChainmail();
   const [listing, setListing] = useState<ListingData | undefined>(undefined);
   const [isOpen, setIsOpen] = useState(false);
+  const [privateKey, setPrivateKey] = useState<string>("");
 
   useEffect(() => {
     const foundListing = chainmail?.buyersListings?.find(
       (listing) => `${listing.id}` === params.id
     );
     setListing(foundListing); // Set the found listing as state
+
+    const pgpKeyPair = localStorage.getItem("pgpKeyPair");
+    if (pgpKeyPair) {
+      const keys = JSON.parse(pgpKeyPair);
+      setPrivateKey(keys.privateKey);
+    }
   }, [chainmail?.buyersListings, params.id]);
 
   return (
     listing && ( // If listing is not undefined
       <div>
         <ListingInformation listing={listing} />
-        {listing.status === 2 && <DecryptEmailBody listing={listing} />}
+        {listing.status === 2 && (
+          <DecryptEmailBody listing={listing} pgpPrivateKey={privateKey} />
+        )}
         <div className="flex justify-center mb-10">
           <button className="btn btn-error" onClick={() => setIsOpen(true)}>
             Open dispute
