@@ -616,6 +616,31 @@ export const abi = [
   },
   {
     "type": "event",
+    "name": "ListingDisputeUpdated",
+    "inputs": [
+      {
+        "name": "listingId",
+        "type": "uint256",
+        "indexed": true,
+        "internalType": "uint256"
+      },
+      {
+        "name": "votesForOwner",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      },
+      {
+        "name": "votesForBuyer",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
     "name": "ListingDisputed",
     "inputs": [
       {

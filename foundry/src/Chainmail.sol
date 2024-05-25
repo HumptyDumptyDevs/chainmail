@@ -114,6 +114,7 @@ contract Chainmail {
         uint256 indexed listingId, address indexed owner, address indexed buyer, bytes encryptedMailData
     );
     event ListingDisputed(uint256 indexed listingId, address indexed buyer, address indexed owner);
+    event ListingDisputeUpdated(uint256 indexed listingId, uint256 votesForOwner, uint256 votesForBuyer);
 
     ///////////////
     // Modifiers //
@@ -390,6 +391,10 @@ contract Chainmail {
             s_disputes[_listingId].votesForOwner += i_chainmailDao.balanceOf(msg.sender);
         }
         s_alreadyVoted[_listingId][msg.sender] = true;
+
+        emit ListingDisputeUpdated(
+            _listingId, s_disputes[_listingId].votesForOwner, s_disputes[_listingId].votesForBuyer
+        );
     }
 
     function resolve(uint256 _listingId) public {
@@ -412,6 +417,7 @@ contract Chainmail {
         }
 
         s_listings[_listingId].status = ListingStatus.COMPLETED;
+        emit ListingStatusChanged(_listingId, ListingStatus.COMPLETED);
     }
 
     function getDispute(uint256 _listingId) public view returns (Dispute memory) {

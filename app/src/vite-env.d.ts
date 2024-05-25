@@ -28,6 +28,14 @@ type DecodedPublicSignals = {
   address: `0x${string}`;
 };
 
+interface DisputeData {
+  listingId: bigint;
+  createdAt: bigint;
+  buyersSecretPgpKey: `0x${string}`;
+  votesForOwner: bigint;
+  votesForBuyer: bigint;
+}
+
 interface ListingData {
   id: bigint;
   status: number;
