@@ -17,12 +17,13 @@ interface Proof {
   pi_c: readonly [bigint, bigint, bigint];
   protocol: string;
   curve: string;
-  pubSignals: readonly [bigint, bigint, bigint, bigint, bigint];
+  pubSignals: readonly [bigint, bigint, bigint, bigint, bigint, bigint];
 }
 
 type DecodedPublicSignals = {
   emailHash: string;
   emailFrom: string;
+  emailSubject: string;
   emailPublicKey: string;
   address: `0x${string}`;
 };

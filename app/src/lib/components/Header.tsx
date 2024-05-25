@@ -14,19 +14,25 @@ const Header = () => {
         </Link>
       </div>
       <div className="navbar flex-grow flex-shrink bg-base-100 flex justify-center ">
-        <Link className="btn btn-ghost link link-primary" to={`/`}>
+        <Link className="btn btn-ghost link link-primary uppercase" to={`/`}>
           View All Listings
         </Link>
         <Link
-          className="btn btn-ghost link link-primary"
+          className="btn btn-ghost link link-primary uppercase"
           to={`/create-listing`}
         >
           Create Listing
         </Link>
-        <Link className="btn btn-ghost link link-primary" to={`/my-listings`}>
+        <Link
+          className="btn btn-ghost link link-primary uppercase"
+          to={`/my-listings`}
+        >
           My Listings
         </Link>
-        <Link className="btn btn-ghost link link-primary" to={`/my-orders`}>
+        <Link
+          className="btn btn-ghost link link-primary uppercase"
+          to={`/my-orders`}
+        >
           My Orders
         </Link>
       </div>

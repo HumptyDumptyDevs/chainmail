@@ -4,6 +4,7 @@ import { verifyDKIMSignature } from "@zk-email/helpers/dist/dkim/index";
 
 export type IMailSaleCircuitInputs = {
   fromEmailIndex: string;
+  subjectIndex: string;
   address: string;
   emailHeader: string[];
   emailHeaderLength: string;
@@ -49,6 +50,10 @@ export async function genRawInputs(
     "from:"
   );
 
+  const rawSubjectIndex = charArrayToString(
+    emailVerifierInputs.emailHeader
+  ).indexOf("subject:");
+
   const bodyHashIndex =
     charArrayToString(emailVerifierInputs.emailHeader).indexOf("bh=") + 3;
 
@@ -67,6 +72,14 @@ export async function genRawInputs(
 
   console.log("From Email Index:", fromEmailIndex);
 
+  const subjectIndex =
+    charArrayToString(emailVerifierInputs.emailHeader).indexOf(
+      ":",
+      rawSubjectIndex
+    ) + 1;
+
+  console.log("Subject Index:", subjectIndex);
+
   console.log(
     charArrayToString(emailVerifierInputs.emailHeader).slice(
       fromEmailIndex,
@@ -81,6 +94,7 @@ export async function genRawInputs(
   return {
     ...emailVerifierInputs,
     fromEmailIndex: fromEmailIndex.toString(),
+    subjectIndex: subjectIndex.toString(),
     bodyHashIndex: bodyHashIndex.toString(),
     address,
   };
@@ -96,6 +110,7 @@ export const generateCircuitInputs = async (
 
   const circuitInputs = {
     fromEmailIndex: rawInputs.fromEmailIndex,
+    subjectIndex: rawInputs.subjectIndex,
     address: rawInputs.address,
     emailHeader: rawInputs.emailHeader,
     emailHeaderLength: rawInputs.emailHeaderLength,

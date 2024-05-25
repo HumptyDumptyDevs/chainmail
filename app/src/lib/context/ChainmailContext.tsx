@@ -5,7 +5,11 @@ import { useAccount, useReadContracts, useWatchContractEvent } from "wagmi";
 interface ChainmailContextType {
   activeListings: readonly ListingData[] | undefined;
   ownersListings: readonly ListingData[] | undefined;
+<<<<<<< HEAD
   buyersListings: readonly ListingData[] | undefined;
+=======
+  buyersListings: ListingData[] | undefined;
+>>>>>>> jack
   listingsLoading: boolean;
   stakeOfAuthenticity: bigint | undefined;
 }

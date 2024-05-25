@@ -32,7 +32,7 @@ const CreateListing = () => {
         ) : (
           <>
             <div className="flex justify-center">
-              <div className="flex flex-col gap-4 items-center">
+              <div className="flex flex-col gap-4 items-left">
                 <h1 className="text-2xl font-bold text-text2 mb-4">
                   Full Proof
                 </h1>
