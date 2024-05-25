@@ -7,10 +7,14 @@ import { ToastContainer, toast } from "react-toastify";
 
 type DecryptEmailBodyProps = {
   listing: ListingData;
+  pgpPrivateKey: string;
 };
 
-const DecryptEmailBody = ({ listing }: DecryptEmailBodyProps) => {
-  const [privateKey, setPrivateKey] = useState<string>("");
+const DecryptEmailBody = ({
+  listing,
+  pgpPrivateKey,
+}: DecryptEmailBodyProps) => {
+  const [privateKey, setPrivateKey] = useState<string>(pgpPrivateKey);
   const [decryptedEmailBody, setDecryptedEmailBody] = useState<string>("");
   const [calculatedBodyHash, setCalculatedBodyHash] = useState<string>("");
 
@@ -56,14 +60,6 @@ const DecryptEmailBody = ({ listing }: DecryptEmailBodyProps) => {
 
     setCalculatedBodyHash(listingBodyHash);
   };
-
-  useEffect(() => {
-    const pgpKeyPair = localStorage.getItem("pgpKeyPair");
-    if (pgpKeyPair) {
-      const keys = JSON.parse(pgpKeyPair);
-      setPrivateKey(keys.privateKey);
-    }
-  }, []);
 
   return (
     <div className="p-10">

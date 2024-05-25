@@ -24,13 +24,8 @@ const ListingStatusBadge: React.FC<ListingStatusBadgeProps> = ({ status }) => {
         };
       case 3:
         return {
-          text: "Cancelled",
+          text: "Disputed",
           className: "badge badge-error badge-outline whitespace-nowrap",
-        };
-      case 4:
-        return {
-          text: "Expired",
-          className: "badge badge-danger badge-outline whitespace-nowrap",
         };
       default:
         return { text: "Unknown", className: "badge badge-dark badge-outline" };

@@ -5,3 +5,5 @@ export { default as Listing } from "./Listing";
 export { default as FulfilListing } from "./FulfilListing";
 export { default as MyOrders } from "./MyOrders";
 export { default as ViewOrder } from "./ViewOrder";
+export { default as Disputes } from "./Disputes";
+export { default as ViewDispute } from "./ViewDispute";
