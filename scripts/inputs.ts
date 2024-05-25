@@ -9,6 +9,7 @@ import path from "path";
 
 export type IMailSaleCircuitInputs = {
   fromEmailIndex: string;
+  subjectIndex: string;
   address: string;
   emailHeader: string[];
   emailHeaderLength: string;
@@ -59,6 +60,13 @@ export async function generateExampleVerifierCircuitInputs(
     "from:"
   );
 
+  //Get the subject index
+  const rawSubjectIndex = charArrayToString(
+    emailVerifierInputs.emailHeader
+  ).indexOf("subject:");
+
+  // console.log(emailVerifierInputs.emailHeader);
+
   const bodyHashIndex =
     charArrayToString(emailVerifierInputs.emailHeader).indexOf("bh=") + 3;
 
@@ -66,9 +74,15 @@ export async function generateExampleVerifierCircuitInputs(
     charArrayToString(emailVerifierInputs.emailHeader).indexOf("<", fromIndex) +
     1;
 
+  const subjectIndex =
+    charArrayToString(emailVerifierInputs.emailHeader).indexOf(
+      ":",
+      rawSubjectIndex
+    ) + 1;
+
   console.log("From Email Index:", fromEmailIndex);
 
-  console.log(charArrayToString(emailVerifierInputs.emailHeader));
+  // console.log(charArrayToString(emailVerifierInputs.emailHeader));
 
   const address = bytesToBigInt(fromHex(ethereumAddress)).toString();
 
@@ -76,6 +90,7 @@ export async function generateExampleVerifierCircuitInputs(
     ...emailVerifierInputs,
     fromEmailIndex: fromEmailIndex.toString(),
     bodyHashIndex: bodyHashIndex.toString(),
+    subjectIndex: subjectIndex.toString(),
     address,
   };
 }
@@ -96,7 +111,7 @@ export async function generateExampleVerifierCircuitInputs(
   );
   //   console.log("\n\nGenerated Inputs:", circuitInputs, "\n\n");
   const headerString = charArrayToString(circuitInputs.emailHeader);
-  console.log("Header:", headerString);
+  // console.log("Header:", headerString);
   const from = "from:";
   console.log("body hash index:", circuitInputs.bodyHashIndex);
   fs.writeFileSync(
