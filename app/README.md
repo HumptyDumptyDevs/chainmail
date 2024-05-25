@@ -1,30 +1,45 @@
-# React + TypeScript + Vite
+# Chainmail Marketplace 🔗
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This code runs a marketplace to facilitate the transactions of emails via Zero-Knowledge Proofs (ZKPs).
 
-Currently, two official plugins are available:
+**[React](https://react.dev/) | [Vite](https://vitejs.dev/) | [wagmi](https://wagmi.sh/) | [RainbowKit](https://www.rainbowkit.com/) | [snarkjs](https://github.com/iden3/snarkjs) | [openpgp](https://openpgpjs.org/) | [Tailwind CSS](https://tailwindcss.com/) | [daisyUI](https://daisyui.com/) | [ApexCharts](https://apexcharts.com/)**
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 📚 Getting Started
 
-## Expanding the ESLint configuration
+#### Pre-requisites
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+**1. Obtain witness, verifier & zkeys**
 
-- Configure the top-level `parserOptions` property like this:
+Navigate to [../circuits](../circuits) for instructions.
 
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
+Copy the below files into [./public](./public):
+
+```
+chainmail.wasm
+chainmail.vkey.json
+chainmail.zkey{abc...}  <-- Ensure all zkey chunks are copied
 ```
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+**2. Create .env.local file with contract address**
+
+Navigate to [../foundry](../foundry) for instructions on how to deploy the contracts locally with Foundry.
+
+```bash
+VITE_CHAINMAIL_CONTRACT_ADDRESS=...
+```
+
+<br />
+
+#### Steps
+
+**1. Install dependencies**
+
+```bash
+yarn install
+```
+
+**2. Run development server**
+
+```bash
+yarn dev
+```
