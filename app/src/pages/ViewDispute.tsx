@@ -63,7 +63,7 @@ const ViewDispute = () => {
 
   return (
     listing && ( // If listing is not undefined
-      <div>
+      <div className="max-w-7xl mx-auto">
         <ListingInformation listing={listing} />
         <DisputeInformation listing={listing} dispute={dispute} />
       </div>

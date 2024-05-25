@@ -17,3 +17,4 @@ export { default as DecryptEmailBody } from "./DecryptEmailBody";
 export { default as ListingDisputes } from "./ListingDisputes";
 export { default as DisputeInformation } from "./DisputeInformation";
 export { default as VotesBar } from "./VotesBar";
+export { default as DisputeVoting } from "./DisputeVoting";

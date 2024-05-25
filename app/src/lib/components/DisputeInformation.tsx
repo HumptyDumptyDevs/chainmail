@@ -3,6 +3,7 @@ import { decryptMessage } from "@/lib/utils/pgp";
 import { convertHexToString } from "@/lib/utils/utils";
 import { verifyEmailBodyHash } from "@/lib/utils/verifyHash";
 import * as decode from "@/lib/utils/decodePublicSignals";
+import ItemDetail from "./ItemDetail";
 
 type DisputeInformationProps = {
   listing: ListingData;
@@ -11,7 +12,7 @@ type DisputeInformationProps = {
 
 const DecryptEmailBody = ({ listing, dispute }: DisputeInformationProps) => {
   const [decryptedEmailBody, setDecryptedEmailBody] = useState<string>("");
-  const [calculatedBodyHash, setCalculatedBodyHash] = useState<string>("");
+  const [bodyHash, setBodyHash] = useState<string>("");
 
   const decryptEmailBody = async () => {
     const encryptedMailData = convertHexToString(
@@ -26,7 +27,6 @@ const DecryptEmailBody = ({ listing, dispute }: DisputeInformationProps) => {
       setDecryptedEmailBody(decrypted as string);
     } catch (error) {
       console.error(error);
-      toast.error("Decryption failed");
     }
   };
 
@@ -40,53 +40,66 @@ const DecryptEmailBody = ({ listing, dispute }: DisputeInformationProps) => {
         decryptedEmailBody,
         listingBodyHash
       );
+      setBodyHash(listingBodyHash);
     } catch (error) {
+      setBodyHash("Hash does not match");
       console.error(error);
     }
-
-    setCalculatedBodyHash(listingBodyHash);
   };
 
   useEffect(() => {
     decryptEmailBody();
+    verifyBodyHash();
   }, []);
 
   return (
-    <div className="p-10">
+    <div className="mt-10 flex flex-col justify-center">
       <h1 className="font-bold text-center text-text1 text-4xl">
         Dispute Information
       </h1>
-      <div className="flex w-full justify-center">
-        <div className="p-5 flex gap-4 flex-col max-w-lg justify-center items-center">
-          <div className="flex flex-col gap-2">
-            <h2 className="font-bold text-text1 text-lg text-center">
-              Buyers Private Key
-            </h2>
-            <textarea
-              className="min-w-64 text-sm h-64 border rounded-lg border-primary1 p-2 bg-background1 textarea textarea-lg "
-              readOnly
-              value={convertHexToString(dispute.buyersSecretPgpKey)}
-            ></textarea>
+
+      <div className="p-10 flex gap-20 justify-center">
+        <div className="flex flex-col">
+          <div className="flex w-full justify-center">
+            <div className="p-5 flex gap-4 flex-col max-w-lg justify-center items-center">
+              <div className="flex flex-col gap-2">
+                <h2 className="font-bold text-text1 text-lg text-center">
+                  Buyers Private Key
+                </h2>
+                <textarea
+                  className="min-w-64 text-sm h-64 border rounded-lg border-primary1 p-2 bg-background1 textarea textarea-lg "
+                  readOnly
+                  value={convertHexToString(dispute.buyersSecretPgpKey)}
+                ></textarea>
+              </div>
+            </div>
+            <div className="flex items-center">
+              <i className="fa-solid fa-right text-text2 text-4xl"></i>
+            </div>
+            <div className="p-5 flex gap-4 flex-col max-w-lg justify-center items-center">
+              <div className="flex flex-col gap-2">
+                <h2 className="font-bold text-text1 text-lg text-center">
+                  Decrypted Email
+                </h2>
+                <textarea
+                  className="min-w-64 h-64 text-sm border rounded-lg border-primary1 p-2 bg-background1 textarea textarea-lg "
+                  readOnly
+                  value={decryptedEmailBody}
+                ></textarea>
+              </div>
+            </div>
           </div>
+          <div
+            className={` ${
+              !!decryptedEmailBody ? "flex flex-col items-center" : "hidden"
+            }  `}
+          ></div>
         </div>
-        <div className="p-5 flex gap-4 flex-col max-w-lg justify-center items-center">
-          <div className="flex flex-col gap-2">
-            <h2 className="font-bold text-text1 text-lg text-center">
-              Decrypted Email
-            </h2>
-            <textarea
-              className="min-w-64 h-64 text-sm border rounded-lg border-primary1 p-2 bg-background1 textarea textarea-lg "
-              readOnly
-              value={decryptedEmailBody}
-            ></textarea>
-          </div>
+        <div className="flex flex-col gap-8 mt-10">
+          <ItemDetail title="Body Hash">{bodyHash}</ItemDetail>
+          <ItemDetail title="Dispute Reason">{dispute.reason}</ItemDetail>
         </div>
       </div>
-      <div
-        className={` ${
-          !!decryptedEmailBody ? "flex flex-col items-center" : "hidden"
-        }  `}
-      ></div>
     </div>
   );
 };

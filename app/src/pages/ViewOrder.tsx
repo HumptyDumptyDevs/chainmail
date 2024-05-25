@@ -15,14 +15,17 @@ import {
   type BaseError,
 } from "wagmi";
 import { convertStringToHex } from "@/lib/utils/utils";
+import { useNavigate } from "react-router-dom";
 
 const ViewOrder = () => {
   const params = useParams();
+  const navigate = useNavigate();
   const { data: hash, error, isPending, writeContract } = useWriteContract();
   const chainmail = useChainmail();
   const [listing, setListing] = useState<ListingData | undefined>(undefined);
   const [isOpen, setIsOpen] = useState(false);
   const [pgpPrivateKey, setPgpPrivateKey] = useState<string>("");
+  const [disputeDescription, setDisputeDescription] = useState<string>("");
 
   const openDispute = async () => {
     if (!listing) return;
@@ -40,7 +43,7 @@ const ViewOrder = () => {
       address: import.meta.env.VITE_CHAINMAIL_CONTRACT_ADDRESS as `0x${string}`,
       abi,
       functionName: "dispute",
-      args: [listing.id, pgpPrivateKeyHex as `0x${string}`],
+      args: [listing.id, pgpPrivateKeyHex as `0x${string}`, disputeDescription],
     });
   };
 
@@ -50,10 +53,13 @@ const ViewOrder = () => {
     );
     setListing(foundListing); // Set the found listing as state
 
-    const pgpKeyPair = localStorage.getItem("pgpKeyPair");
-    if (pgpKeyPair) {
-      const keys = JSON.parse(pgpKeyPair);
-      setPgpPrivateKey(keys.privateKey);
+    const pgpKeyPairMap = localStorage.getItem("pgpKeyPairMap") || "{}";
+
+    if (foundListing) {
+      const pgpKeyPair = JSON.parse(pgpKeyPairMap)[Number(foundListing.id)];
+      if (pgpKeyPair) {
+        setPgpPrivateKey(pgpKeyPair.privateKey);
+      }
     }
   }, [chainmail?.buyersListings, params.id]);
 
@@ -75,14 +81,28 @@ const ViewOrder = () => {
     listing && ( // If listing is not undefined
       <div>
         <ListingInformation listing={listing} />
-        {listing.status === 2 && (
-          <DecryptEmailBody listing={listing} pgpPrivateKey={pgpPrivateKey} />
+        {listing.status === 2 ? (
+          <>
+            <DecryptEmailBody listing={listing} pgpPrivateKey={pgpPrivateKey} />
+            <div className="flex justify-center mb-10">
+              <button className="btn btn-error" onClick={() => setIsOpen(true)}>
+                Open dispute
+              </button>
+            </div>
+          </>
+        ) : (
+          <div className="flex flex-col mt-10 gap-10 items-center">
+            <div className="text-center text-text-2 font-bold text-2xl">
+              This order is being disputed.
+            </div>
+            <button
+              className="btn btn-primary    w-fit"
+              onClick={() => navigate(`/disputes/${listing.id}`)}
+            >
+              View dispute
+            </button>
+          </div>
         )}
-        <div className="flex justify-center mb-10">
-          <button className="btn btn-error" onClick={() => setIsOpen(true)}>
-            Open dispute
-          </button>
-        </div>
         <Dialog
           open={isOpen}
           onClose={() => setIsOpen(false)}
@@ -96,6 +116,12 @@ const ViewOrder = () => {
                 Are you sure you want to open a dispute? If you lose the dispute
                 you will forfeit your stake of authenticity.
               </p>
+              <textarea
+                className="w-full h-32 border rounded-lg border-primary1 p-2 bg-background1 textarea textarea-lg"
+                placeholder="Enter the reason for the dispute."
+                value={disputeDescription}
+                onChange={(e) => setDisputeDescription(e.target.value)}
+              ></textarea>
               <div className="flex gap-4">
                 <button
                   className="btn btn-outline"

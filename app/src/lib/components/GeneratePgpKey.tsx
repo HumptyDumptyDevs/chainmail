@@ -13,7 +13,6 @@ const GeneratePgpKey = ({ listingId, keys, setKeys }: GeneratePgpKeyProps) => {
 
   // Retrieve existing key pair map or initialize an empty object
   let pgpKeyPairMap = JSON.parse(localStorage.getItem("pgpKeyPairMap") || "{}");
-
   const account = useAccount();
 
   useEffect(() => {
@@ -21,25 +20,30 @@ const GeneratePgpKey = ({ listingId, keys, setKeys }: GeneratePgpKeyProps) => {
   }, []);
 
   const generatePgpKey = async () => {
+    console.log("Generating PGP key");
+    console.log(pgpKeyPairMap);
     if (pgpKeyPairMap.hasOwnProperty(listingId)) {
       console.log(`Listing ID ${listingId} found.`);
       let pgpKeyPair = pgpKeyPairMap[listingId];
       console.log(pgpKeyPair);
-      const keys = JSON.parse(pgpKeyPair);
       console.log("Setting keys from storage");
+      console.log(keys);
       setKeys(keys);
       return;
     }
 
     if (!pgpKeyPairMap.hasOwnProperty(listingId)) {
+      console.log(`Listing ID ${listingId} not found.`);
       const { privateKey, publicKey } = await generateKeyPair(
         account?.address || ""
       );
 
+      console.log("Setting keys from generated key pair");
+
       // Create a new map with the existing pairs AND the new one
       const updatedPgpKeyPairMap = {
         ...pgpKeyPairMap, // Spread existing key pairs
-        [listingId]: JSON.stringify({ privateKey, publicKey }),
+        [listingId]: { privateKey, publicKey },
       };
 
       console.log(updatedPgpKeyPairMap);
