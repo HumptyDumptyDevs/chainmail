@@ -3,3 +3,7 @@ export { default as Header } from "./Header";
 export { default as GenerateZkProof } from "./GenerateZkProof";
 export { default as VerifyProof } from "./VerifyProof";
 export { default as PublicSignals } from "./PublicSignals";
+export { default as BuyEmail } from "./BuyEmail";
+export { default as GeneratePgpKey } from "./GeneratePgpKey";
+export { default as ItemDetail } from "./ItemDetail";
+export { default as ListingInformation } from "./ListingInformation";

@@ -58,3 +58,16 @@ export function extractDKIMHeaderBodyHash(email: string) {
 
   return bodyHash;
 }
+
+export const mapListingStatus = (status: number) => {
+  switch (status) {
+    case 0:
+      return "Active";
+    case 1:
+      return "Pending-Delivery";
+    case 2:
+      return "Fulfilled";
+    default:
+      return "Unknown";
+  }
+};

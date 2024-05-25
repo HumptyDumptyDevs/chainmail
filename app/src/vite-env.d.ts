@@ -2,6 +2,11 @@
 
 declare module "snarkjs";
 
+interface PGPKeyPair {
+  privateKey: string;
+  publicKey: string;
+}
+
 interface Proof {
   pi_a: readonly [bigint, bigint, bigint];
   pi_b: readonly [
