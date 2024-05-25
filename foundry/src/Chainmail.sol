@@ -3,14 +3,15 @@
 pragma solidity ^0.8.18;
 
 import {Verifier} from "./Verifier.sol";
-import {ChainmailDao} from "./ChainmailDao.sol";
+import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
 /**
  * @title Chainmail
  * @author HumptyDumptyDevs and Fedor!
  * @notice A marketplace for buying and selling encrypted emails
  */
-contract Chainmail {
+contract Chainmail is ERC20, Ownable {
     ///////////////
     //  Errors   //
     //////////////
@@ -74,9 +75,20 @@ contract Chainmail {
         bytes buyersSecretPgpKey;
         uint256 votesForOwner;
         uint256 votesForBuyer;
+        string reason;
     }
 
-    mapping(uint256 => mapping(address => bool)) private s_alreadyVoted;
+    struct Vote {
+        bool buyerIsRight;
+        uint256 amount;
+        bool claimed;
+    }
+    // disputeId => address => bool
+
+    mapping(address => mapping(uint256 => bool)) private s_alreadyVoted;
+
+    // address => disputeId => Vote
+    mapping(address => mapping(uint256 => Vote)) private s_Votes;
 
     ////////////////////////
     //  State Variables   //
@@ -84,14 +96,13 @@ contract Chainmail {
 
     //Immutables
     Verifier private i_verifier;
-    uint256 private i_stakeOfAuthenticity;
+    uint256 public i_stakeOfAuthenticity;
 
     // Constants
     uint256 constant DISPUTE_DURATION = 2 days;
 
     //Storage
-
-    uint256 private s_listingId;
+    uint256 public s_listingId;
     mapping(uint256 listingId => Listing listing) private s_listings; // Mapping of listingId to the Listing
     mapping(address buyer => uint256[] listingIds) private s_buyersListings; // Mapping of buyer to listing ids (buyer can have multiple listings)
     mapping(address owner => uint256[] listingIds) private s_ownersListings; // Mapping of owner to listing ids (owner can have multiple listings)
@@ -99,10 +110,7 @@ contract Chainmail {
     uint256[] private s_activeListingIds; // Array of active listing ids so we can loop through them
 
     // Disputes
-    mapping(uint256 listingId => Dispute dispute) private s_disputes;
-
-    // DAO
-    ChainmailDao private i_chainmailDao;
+    mapping(uint256 listingId => Dispute dispute) public s_disputes;
 
     ///////////////
     // Events   //
@@ -138,11 +146,14 @@ contract Chainmail {
     // Constructor //
     ////////////////
 
-    constructor(address _verifier, uint256 _stakeOfAuthenticity, address _chainmailDao) {
+    constructor(address _verifier, uint256 _stakeOfAuthenticity)
+        ERC20("Chainmail Voting Power", "Chainmail Voting Power")
+        Ownable(msg.sender)
+    {
+        _mint(msg.sender, 2013_05_20 * 10 ** 18);
         i_verifier = Verifier(_verifier);
         i_stakeOfAuthenticity = _stakeOfAuthenticity;
         s_listingId = 0;
-        i_chainmailDao = ChainmailDao(_chainmailDao);
     }
 
     //////////////////
@@ -267,21 +278,6 @@ contract Chainmail {
 
         emit ListingDelivered(_listingId, listing.owner, msg.sender, _encryptedMailData);
         emit ListingStatusChanged(_listingId, ListingStatus.FULFILLED);
-
-        uint256 totalEthToSendToOwner = listing.price + listing.ownerStakeOfAuthenticity;
-
-        (bool ownerTransferSuccess,) = listing.owner.call{value: totalEthToSendToOwner}("");
-
-        if (!ownerTransferSuccess) {
-            revert Chainmail__OwnerTransferFailed(); // I am not sure if this is the right way to handle this
-        }
-
-        //Also refund the stake of authenticity to the buyer
-        (bool buyerTransferSuccess,) = listing.buyer.call{value: listing.buyerStakeOfAuthenticity}("");
-
-        if (!buyerTransferSuccess) {
-            revert Chainmail__BuyerTransferFailed(); // I am not sure if this is the right way to handle this
-        }
     }
 
     //////////////////////////////////////
@@ -347,7 +343,13 @@ contract Chainmail {
     // Dispute   //
     //////////////
 
-    function dispute(uint256 _listingId, bytes memory _buyersSecretPgpKey) public {
+    /*
+    * Allows the buyer or owner to dispute the listing
+    * @param _listingId The id of the listing
+    * @param _buyersSecretPgpKey The buyers secret pgp key
+    * @param reason The reason for the dispute
+    */
+    function dispute(uint256 _listingId, bytes memory _buyersSecretPgpKey, string memory reason) public {
         if (s_listings[_listingId].status != ListingStatus.FULFILLED) {
             revert Chainmail__InvalidListingStatus(s_listings[_listingId].status);
         }
@@ -361,7 +363,8 @@ contract Chainmail {
             createdAt: block.timestamp,
             buyersSecretPgpKey: _buyersSecretPgpKey,
             votesForOwner: 0,
-            votesForBuyer: 0
+            votesForBuyer: 0,
+            reason: reason
         });
 
         s_disputes[_listingId] = _dispute;
@@ -371,6 +374,11 @@ contract Chainmail {
         emit ListingDisputed(_listingId, s_listings[_listingId].buyer, s_listings[_listingId].owner);
     }
 
+    /**
+     * Allows the buyer or owner to vote on the dispute
+     * @param buyerIsRight True if the buyer is right, false if the owner is right
+     * @param _listingId The id of the listing
+     */
     function vote(bool buyerIsRight, uint256 _listingId) public {
         if (s_listings[_listingId].status != ListingStatus.DISPUTED) {
             revert Chainmail__InvalidListingStatus(s_listings[_listingId].status);
@@ -381,43 +389,72 @@ contract Chainmail {
             revert Chainmail__DisputeDurationPassed();
         }
 
-        if (s_alreadyVoted[_listingId][msg.sender]) {
+        if (s_alreadyVoted[msg.sender][_listingId]) {
             revert Chainmail__AlreadyVoted();
         }
 
         if (buyerIsRight) {
-            s_disputes[_listingId].votesForBuyer += i_chainmailDao.balanceOf(msg.sender);
+            s_disputes[_listingId].votesForBuyer += balanceOf(msg.sender);
         } else {
-            s_disputes[_listingId].votesForOwner += i_chainmailDao.balanceOf(msg.sender);
+            s_disputes[_listingId].votesForOwner += balanceOf(msg.sender);
         }
-        s_alreadyVoted[_listingId][msg.sender] = true;
 
+        s_alreadyVoted[msg.sender][_listingId] = true;
+        s_Votes[msg.sender][_listingId] =
+            Vote({buyerIsRight: buyerIsRight, amount: balanceOf(msg.sender), claimed: false});
         emit ListingDisputeUpdated(
             _listingId, s_disputes[_listingId].votesForOwner, s_disputes[_listingId].votesForBuyer
         );
     }
 
+    /**
+     * Called after the dispute duration has passed to resolve the dispute
+     */
     function resolve(uint256 _listingId) public {
         if (s_listings[_listingId].status != ListingStatus.DISPUTED) {
             revert Chainmail__InvalidListingStatus(s_listings[_listingId].status);
         }
 
-        address payable buyer = payable(s_listings[_listingId].buyer);
-        address payable owner = payable(s_listings[_listingId].owner);
-        address payable dao = payable(address(i_chainmailDao));
-
-        if (s_disputes[_listingId].votesForBuyer > s_disputes[_listingId].votesForOwner) {
-            buyer.transfer(s_listings[_listingId].price);
-            buyer.transfer(s_listings[_listingId].buyerStakeOfAuthenticity);
-            dao.transfer(s_listings[_listingId].ownerStakeOfAuthenticity);
-        } else {
-            owner.transfer(s_listings[_listingId].price);
-            owner.transfer(s_listings[_listingId].ownerStakeOfAuthenticity);
-            dao.transfer(s_listings[_listingId].buyerStakeOfAuthenticity);
+        if (block.timestamp < s_disputes[_listingId].createdAt + DISPUTE_DURATION) {
+            revert Chainmail__DisputeDurationPassed();
         }
 
         s_listings[_listingId].status = ListingStatus.COMPLETED;
         emit ListingStatusChanged(_listingId, ListingStatus.COMPLETED);
+    }
+
+    /*
+    * Allows the buyer or owner to claim the reward
+    * @param _listingId The id of the listing
+    */
+    function claim(uint256 _listingId) public {
+        if (s_listings[_listingId].status != ListingStatus.COMPLETED) {
+            revert Chainmail__InvalidListingStatus(s_listings[_listingId].status);
+        }
+
+        if (!s_Votes[msg.sender][_listingId].claimed) {
+            if (s_disputes[_listingId].votesForBuyer > s_disputes[_listingId].votesForOwner) {
+                // Buyer wins
+                if (s_Votes[msg.sender][_listingId].buyerIsRight) {
+                    uint256 amount = (s_Votes[msg.sender][_listingId].amount / s_disputes[_listingId].votesForOwner)
+                        * s_listings[_listingId].ownerStakeOfAuthenticity;
+
+                    s_Votes[msg.sender][_listingId].claimed = true;
+                    transfer(msg.sender, amount);
+                }
+            } else {
+                // Owner wins
+                if (!s_Votes[msg.sender][_listingId].buyerIsRight) {
+                    // Buyer has voted for the owner
+
+                    uint256 amount = (s_Votes[msg.sender][_listingId].amount / s_disputes[_listingId].votesForOwner)
+                        * s_listings[_listingId].ownerStakeOfAuthenticity;
+
+                    s_Votes[msg.sender][_listingId].claimed = true;
+                    transfer(msg.sender, amount);
+                }
+            }
+        }
     }
 
     function getDispute(uint256 _listingId) public view returns (Dispute memory) {

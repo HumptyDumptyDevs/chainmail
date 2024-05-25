@@ -3,7 +3,6 @@ import { decryptMessage } from "@/lib/utils/pgp";
 import { convertHexToString } from "@/lib/utils/utils";
 import { verifyEmailBodyHash } from "@/lib/utils/verifyHash";
 import * as decode from "@/lib/utils/decodePublicSignals";
-import { ToastContainer, toast } from "react-toastify";
 
 type DisputeInformationProps = {
   listing: ListingData;
