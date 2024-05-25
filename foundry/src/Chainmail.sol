@@ -3,6 +3,7 @@
 pragma solidity ^0.8.18;
 
 import {Verifier} from "./Verifier.sol";
+import {ChainmailDao} from "./ChainmailDao.sol";
 
 /**
  * @title Chainmail
@@ -24,6 +25,9 @@ contract Chainmail {
     error Chainmail__OwnerTransferFailed();
     error Chainmail__BuyerTransferFailed();
 
+    error Chainmail__AlreadyVoted();
+    error Chainmail__DisputeDurationPassed();
+
     //////////////
     //  Types  //
     /////////////
@@ -31,7 +35,9 @@ contract Chainmail {
     enum ListingStatus {
         ACTIVE,
         PENDING_DELIVERY,
-        FULFILLED
+        FULFILLED,
+        COMPLETED,
+        DISPUTED
     }
 
     //////////////
@@ -60,16 +66,30 @@ contract Chainmail {
         bytes buyersPublicPgpKey;
         bytes encryptedMailData;
         address buyer;
+
     }
+
+    struct Dispute {
+        uint256 listingId;
+        uint256 createdAt;
+        bytes buyersSecretPgpKey;
+        uint256 votesForOwner;
+        uint256 votesForBuyer;
+    }
+    mapping(uint256 => mapping(address => bool)) private s_alreadyVoted;
 
     ////////////////////////
     //  State Variables   //
     ////////////////////////
 
     //Immutables
-
     Verifier private i_verifier;
     uint256 private i_stakeOfAuthenticity;
+
+
+    // Constants
+    uint256 DISPUTE_DURATION = 2 days;
+
 
     //Storage
 
@@ -80,10 +100,18 @@ contract Chainmail {
 
     uint256[] private s_activeListingIds; // Array of active listing ids so we can loop through them
 
+
+    // Disputes
+    mapping(uint256 listingId => Dispute dispute) private s_disputes;
+
+
+    // DAO
+    ChainmailDao private i_chainmailDao;
+
+
     ///////////////
     // Events   //
     //////////////
-
     event ListingCreated(uint256 indexed listingId, address indexed owner, string indexed description, uint256 price);
     event ListingStatusChanged(uint256 indexed listingId, ListingStatus indexed status);
     event ListingPurchased(uint256 indexed listingId, address indexed buyer, uint256 price);
@@ -113,10 +141,11 @@ contract Chainmail {
     // Constructor //
     ////////////////
 
-    constructor(address _verifier, uint256 _stakeOfAuthenticity) {
+    constructor(address _verifier, uint256 _stakeOfAuthenticity, address _chainmailDao) {
         i_verifier = Verifier(_verifier);
         i_stakeOfAuthenticity = _stakeOfAuthenticity;
         s_listingId = 0;
+        i_chainmailDao = ChainmailDao(_chainmailDao);
     }
 
     //////////////////
@@ -299,4 +328,81 @@ contract Chainmail {
     function getStakeOfAuthenticity() external view returns (uint256) {
         return i_stakeOfAuthenticity;
     }
+
+
+
+
+
+
+
+    ///////////////
+    // Dispute   //
+    //////////////
+
+    function dispute(uint256 _listingId, bytes memory _buyersSecretPgpKey) public {
+        if (s_listings[_listingId].status != ListingStatus.FULFILLED) {
+            revert Chainmail__InvalidListingStatus(s_listings[_listingId].status);
+        }
+
+        if (msg.sender != s_listings[_listingId].buyer ||
+            msg.sender != s_listings[_listingId].owner) {
+            revert Chainmail__InvalidListingOwner();
+        }
+
+        Dispute memory _dispute = Dispute({
+            listingId: _listingId,
+            createdAt: block.timestamp,
+            buyersSecretPgpKey: _buyersSecretPgpKey,
+            votesForOwner: 0,
+            votesForBuyer: 0
+        });
+
+        s_disputes[_listingId] = _dispute;
+        s_listings[_listingId].status = ListingStatus.DISPUTED;
+    }
+
+    function vote(bool buyerIsRight, uint256 _listingId) public {
+        if (s_listings[_listingId].status != ListingStatus.DISPUTED) {
+            revert Chainmail__InvalidListingStatus(s_listings[_listingId].status);
+        }
+
+        // Dispute duration has passed
+        if (block.timestamp > s_disputes[_listingId].createdAt + DISPUTE_DURATION) {
+            revert Chainmail__DisputeDurationPassed();
+        }
+
+        if (s_alreadyVoted[_listingId][msg.sender]) {
+            revert Chainmail__AlreadyVoted();
+        }
+
+        if (buyerIsRight) {
+            s_disputes[_listingId].votesForBuyer += i_chainmailDao.balanceOf(msg.sender);
+        } else {
+            s_disputes[_listingId].votesForOwner += i_chainmailDao.balanceOf(msg.sender);
+        }
+        s_alreadyVoted[_listingId][msg.sender] = true;
+    }
+
+    function resolve(uint256 _listingId) public {
+        if (s_listings[_listingId].status != ListingStatus.DISPUTED) {
+            revert Chainmail__InvalidListingStatus(s_listings[_listingId].status);
+        }
+
+        address payable buyer =payable(s_listings[_listingId].buyer);
+        address payable owner =payable(s_listings[_listingId].owner);
+        address payable dao = payable(address(i_chainmailDao));
+
+        if (s_disputes[_listingId].votesForBuyer > s_disputes[_listingId].votesForOwner) {
+            buyer.transfer(s_listings[_listingId].price);
+            buyer.transfer(s_listings[_listingId].buyerStakeOfAuthenticity);
+            dao.transfer(s_listings[_listingId].ownerStakeOfAuthenticity);
+        } else {
+            owner.transfer(s_listings[_listingId].price);
+            owner.transfer(s_listings[_listingId].ownerStakeOfAuthenticity);
+            dao.transfer(s_listings[_listingId].buyerStakeOfAuthenticity);
+        }
+
+        s_listings[_listingId].status = ListingStatus.COMPLETED;
+    }
+
 }
