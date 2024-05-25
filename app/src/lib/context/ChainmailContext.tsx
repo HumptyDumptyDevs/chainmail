@@ -4,6 +4,7 @@ import { useAccount, useReadContracts, useWatchContractEvent } from "wagmi";
 
 interface ChainmailContextType {
   activeListings: readonly ListingData[] | undefined;
+  ownersListings: readonly ListingData[] | undefined;
   listingsLoading: boolean;
   stakeOfAuthenticity: bigint | undefined;
 }
@@ -42,6 +43,11 @@ export const ChainmailProvider = ({ children }: ChainmailProviderProps) => {
       },
       {
         ...mailMarketPlaceContractConfig,
+        functionName: "getOwnersListings",
+        args: [address as `0x${string}`],
+      },
+      {
+        ...mailMarketPlaceContractConfig,
         functionName: "getStakeOfAuthenticity",
       },
     ],
@@ -59,7 +65,8 @@ export const ChainmailProvider = ({ children }: ChainmailProviderProps) => {
   });
 
   const activeListings = listingsResponse?.[0]?.result;
-  const stakeOfAuthenticity = listingsResponse?.[1]?.result;
+  const ownersListings = listingsResponse?.[1]?.result;
+  const stakeOfAuthenticity = listingsResponse?.[2]?.result;
 
   console.log("activeListings", activeListings);
 
@@ -67,6 +74,7 @@ export const ChainmailProvider = ({ children }: ChainmailProviderProps) => {
     <ChainmailContext.Provider
       value={{
         activeListings,
+        ownersListings,
         listingsLoading,
         stakeOfAuthenticity,
       }}

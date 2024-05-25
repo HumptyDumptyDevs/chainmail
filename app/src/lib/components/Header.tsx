@@ -17,9 +17,9 @@ const Header = () => {
         </Link>
         <Link
           className="btn btn-ghost link link-primary"
-          to={`/create-new-listing`}
+          to={`/create-listing`}
         >
-          Create New Listing
+          Create Listing
         </Link>
         <Link className="btn btn-ghost link link-primary" to={`/my-listings`}>
           My Listings
