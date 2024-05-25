@@ -296,6 +296,23 @@ contract Chainmail {
         return ownersListings;
     }
 
+    /*
+    * @notice Get all the listings where the address is the buyer
+    * This function returns an array of listings where the is the buyer
+    * 
+    */
+    function getBuyersListings(address _buyer) external view returns (Listing[] memory) {
+        uint256 buyerCount = s_buyersListings[_buyer].length;
+        Listing[] memory buyersListings = new Listing[](buyerCount);
+
+        for (uint256 i = 0; i < buyerCount; i++) {
+            uint256 listingId = s_buyersListings[_buyer][i];
+            buyersListings[i] = s_listings[listingId];
+        }
+
+        return buyersListings;
+    }
+
     function getStakeOfAuthenticity() external view returns (uint256) {
         return i_stakeOfAuthenticity;
     }

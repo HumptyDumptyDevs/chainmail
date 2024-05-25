@@ -197,6 +197,119 @@ export const abi = [
   },
   {
     "type": "function",
+    "name": "getBuyersListings",
+    "inputs": [
+      {
+        "name": "_buyer",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "tuple[]",
+        "internalType": "struct Chainmail.Listing[]",
+        "components": [
+          {
+            "name": "id",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "status",
+            "type": "uint8",
+            "internalType": "enum Chainmail.ListingStatus"
+          },
+          {
+            "name": "owner",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "description",
+            "type": "string",
+            "internalType": "string"
+          },
+          {
+            "name": "price",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "ownerStakeOfAuthenticity",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "buyerStakeOfAuthenticity",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "createdAt",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "proof",
+            "type": "tuple",
+            "internalType": "struct Chainmail.Proof",
+            "components": [
+              {
+                "name": "pi_a",
+                "type": "uint256[3]",
+                "internalType": "uint256[3]"
+              },
+              {
+                "name": "pi_b",
+                "type": "uint256[2][3]",
+                "internalType": "uint256[2][3]"
+              },
+              {
+                "name": "pi_c",
+                "type": "uint256[3]",
+                "internalType": "uint256[3]"
+              },
+              {
+                "name": "protocol",
+                "type": "string",
+                "internalType": "string"
+              },
+              {
+                "name": "curve",
+                "type": "string",
+                "internalType": "string"
+              },
+              {
+                "name": "pubSignals",
+                "type": "uint256[5]",
+                "internalType": "uint256[5]"
+              }
+            ]
+          },
+          {
+            "name": "buyersPublicPgpKey",
+            "type": "bytes",
+            "internalType": "bytes"
+          },
+          {
+            "name": "encryptedMailData",
+            "type": "bytes",
+            "internalType": "bytes"
+          },
+          {
+            "name": "buyer",
+            "type": "address",
+            "internalType": "address"
+          }
+        ]
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
     "name": "getOwnersListings",
     "inputs": [
       {

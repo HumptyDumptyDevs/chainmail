@@ -7,6 +7,8 @@ import {
   MyListings,
   Listing,
   FulfilListing,
+  MyOrders,
+  ViewOrder,
 } from "@/pages/index";
 
 function App() {
@@ -21,6 +23,8 @@ function App() {
             <Route path="/create-listing" element={<CreateListing />} />
             <Route path="/my-listings/fulfil/:id" element={<FulfilListing />} />
             <Route path="/my-listings" element={<MyListings />} />
+            <Route path="/my-orders" element={<MyOrders />} />
+            <Route path="/my-orders/:id" element={<ViewOrder />} />
           </Routes>
         </Providers>
       </Router>

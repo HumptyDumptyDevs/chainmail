@@ -1,9 +1,9 @@
-import MyListings from "@/components/MyListings";
+import { MyListingOrders } from "@/lib/components";
 
 export default function Home() {
   return (
     <main className="flex flex-col max-w-4xl mx-auto">
-      <MyListings />
+      <MyListingOrders />
     </main>
   );
 }
