@@ -51,8 +51,8 @@ export const abi = [
           },
           {
             "name": "pubSignals",
-            "type": "uint256[5]",
-            "internalType": "uint256[5]"
+            "type": "uint256[6]",
+            "internalType": "uint256[6]"
           }
         ]
       },
@@ -175,8 +175,8 @@ export const abi = [
               },
               {
                 "name": "pubSignals",
-                "type": "uint256[5]",
-                "internalType": "uint256[5]"
+                "type": "uint256[6]",
+                "internalType": "uint256[6]"
               }
             ]
           },
@@ -288,8 +288,8 @@ export const abi = [
               },
               {
                 "name": "pubSignals",
-                "type": "uint256[5]",
-                "internalType": "uint256[5]"
+                "type": "uint256[6]",
+                "internalType": "uint256[6]"
               }
             ]
           },
