@@ -22,7 +22,7 @@ type ChainmailProviderProps = {
 };
 
 export const ChainmailProvider = ({ children }: ChainmailProviderProps) => {
-  const mailMarketPlaceContractConfig = {
+  const chainmailContractConfig = {
     address: import.meta.env.VITE_CHAINMAIL_CONTRACT_ADDRESS as `0x${string}`,
     abi: abi,
   };
@@ -38,23 +38,23 @@ export const ChainmailProvider = ({ children }: ChainmailProviderProps) => {
   } = useReadContracts({
     contracts: [
       {
-        ...mailMarketPlaceContractConfig,
+        ...chainmailContractConfig,
         functionName: "getActiveListings",
       },
       {
-        ...mailMarketPlaceContractConfig,
+        ...chainmailContractConfig,
         functionName: "getOwnersListings",
         args: [address as `0x${string}`],
       },
       {
-        ...mailMarketPlaceContractConfig,
+        ...chainmailContractConfig,
         functionName: "getStakeOfAuthenticity",
       },
     ],
   });
 
   useWatchContractEvent({
-    ...mailMarketPlaceContractConfig,
+    ...chainmailContractConfig,
     eventName: "ListingStatusChanged",
     onLogs(logs) {
       refetchListings();

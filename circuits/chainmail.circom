@@ -4,21 +4,24 @@ include "@zk-email/zk-regex-circom/circuits/common/from_addr_regex.circom";
 include "@zk-email/circuits/email-verifier.circom";
 include "@zk-email/circuits/utils/regex.circom";
 include "@zk-email/zk-regex-circom/circuits/common/body_hash_regex.circom";
+include "@zk-email/zk-regex-circom/circuits/common/subject_all_regex.circom";
 
 
 template Chainmail(maxHeadersLength, n, k) {
-    
     signal input emailHeader[maxHeadersLength];
     signal input emailHeaderLength;
     signal input pubkey[k];
     signal input signature[k];
     signal input bodyHashIndex;
     signal input address; 
+    signal input fromEmailIndex;
+    signal input subjectIndex;
 
     // Witnesses and constraints for regex go here
     signal output pubkeyHash;
     signal output bhBase64[2];
     signal output fromEmailAddress;
+    signal output subject;
   
     component EV = EmailVerifier(maxHeadersLength, 0, n, k, 1);
     EV.emailHeader <== emailHeader;
@@ -29,7 +32,6 @@ template Chainmail(maxHeadersLength, n, k) {
     pubkeyHash <== EV.pubkeyHash;
 
     // FROM HEADER REGEX: 736,553 constraints
-    signal input fromEmailIndex;
 
     signal (fromEmailFound, fromEmailReveal[maxHeadersLength]) <== FromAddrRegex(maxHeadersLength)(emailHeader);
     fromEmailFound === 1;
@@ -38,6 +40,15 @@ template Chainmail(maxHeadersLength, n, k) {
 
     signal fromEmailAddrPacks[2] <== PackRegexReveal(maxHeadersLength, maxEmailLength)(fromEmailReveal, fromEmailIndex);
     fromEmailAddress <== fromEmailAddrPacks[0];
+
+    // SUBJECT REGEX
+    signal (subjectFound, subjectReveal[maxHeadersLength]) <== SubjectAllRegex(maxHeadersLength)(emailHeader);
+    subjectFound === 1;
+
+    var maxSubjectLength = 60;
+
+    signal subjectPacks[2] <== PackRegexReveal(maxHeadersLength, maxSubjectLength)(subjectReveal, subjectIndex);
+    subject <== subjectPacks[0];
     
     // BODY HASH REGEX
     signal (bodyHashFound, bodyHashReveal[maxHeadersLength]) <== BodyHashRegex(maxHeadersLength)(emailHeader);
