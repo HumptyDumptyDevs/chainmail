@@ -10,7 +10,7 @@ export { default as ListingInformation } from "./ListingInformation";
 export { default as ListingTable } from "./ListingTable";
 export { default as AllListings } from "./AllListings";
 export { default as MyListings } from "./MyListings";
-export { default as StatusBadge } from "./StatusBadge";
+export { default as ListingStatusBadge } from "./ListingStatusBadge";
 export { default as FulfilOrder } from "./FulfilOrder";
 export { default as MyListingOrders } from "./MyListingOrders";
 export { default as DecryptEmailBody } from "./DecryptEmailBody";
