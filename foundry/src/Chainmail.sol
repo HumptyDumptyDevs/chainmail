@@ -154,6 +154,7 @@ contract Chainmail is ERC20, Ownable {
         ERC20("Chainmail Voting Power", "Chainmail Voting Power") 
         Ownable(msg.sender)
     {
+        _mint(msg.sender, 2013_05_20 * 10 ** 18);
         i_verifier = Verifier(_verifier);
         i_stakeOfAuthenticity = _stakeOfAuthenticity;
         s_listingId = 0;
