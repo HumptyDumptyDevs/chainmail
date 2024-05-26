@@ -1,6 +1,6 @@
 # Chainmail: ZKP Email Marketplace 📧🛡️
 
-![heh](./cm.jpeg)
+![heh](./images/cm.jpeg)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 Chainmail is a marketplace for emails verified using Zero-Knowledge Proofs (ZKPs) to prove the authenticity of the sender whilst preserving the anonymity of the recipient.
@@ -29,9 +29,13 @@ Transaction disputes are mediated via an implemented DAO (Chainmail DAO).
 - [`circuits/`](./circuits) - circom circuitry
 - [`foundry/`](./foundry) - Foundry project for marketplace & DAO contracts
 
+## 🌊 Flow
+
+![architecture_flow](./images/Chainmail_EthBerlin04.drawio.png)
+
 ## 📚 Getting Started
 
-Navigate to the above folders for specific docs 🧐
+Navigate to the project folders for specific docs 🧐
 
 <br />
 <br />
