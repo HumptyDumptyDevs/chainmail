@@ -35,9 +35,9 @@ format :; forge fmt
 anvil :; anvil -m 'test test test test test test test test test test test junk' --steps-tracing --block-time 1
 
 send-eth :; cast send $(ADDRESS) --rpc-url $(RPC_URL) --value 1000ether --account local
-send-eth-local :; cast send 0x4A56c8a2522bc3F685546Fb9f1c2C62be8C73A97 --rpc-url $(RPC_URL) --value 1000ether --account local
+send-eth-local :; cast send 0x648E7B42e75Ca71Ea06d45F1e5caD92C0486F3b9 --rpc-url $(RPC_URL) --value 1000ether --account local
 
-NETWORK_ARGS := --rpc-url $(RPC_URL)  --account local --broadcast
+NETWORK_ARGS := --rpc-url $(RPC_URL) --sender $(ADDRESS) --account berlin2 --broadcast
 
 ifeq ($(findstring --network local ,$(ARGS)),--network local) 
 	NETWORK_ARGS := --rpc-url $(RPC_URL) --account sepolia --broadcast 
@@ -48,7 +48,8 @@ ifeq ($(findstring --network sepolia,$(ARGS)),--network sepolia)
 endif
 
 deploy:
-	@forge script script/DeployChainmail.s.sol:DeployChainmail --rpc-url $(RPC_URL) --sender $(ADDRESS) --account berlin --broadcast
+	@forge script script/DeployChainmail.s.sol:DeployChainmail $(NETWORK_ARGS)
+
 
 create-listing:
 	@forge script script/Interactions.s.sol:CreateListing $(NETWORK_ARGS) --sender $(DEFAULT_ANVIL_PUBLIC_KEY) -vvvv

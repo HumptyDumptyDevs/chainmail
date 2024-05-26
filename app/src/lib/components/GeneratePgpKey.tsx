@@ -27,8 +27,8 @@ const GeneratePgpKey = ({ listingId, keys, setKeys }: GeneratePgpKeyProps) => {
       let pgpKeyPair = pgpKeyPairMap[listingId];
       console.log(pgpKeyPair);
       console.log("Setting keys from storage");
-      console.log(keys);
-      setKeys(keys);
+      console.log(pgpKeyPair);
+      setKeys(pgpKeyPair);
       return;
     }
 

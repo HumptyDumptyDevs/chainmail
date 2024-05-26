@@ -7,6 +7,7 @@ import {
   type BaseError,
 } from "wagmi";
 import { abi } from "@/lib/abi/abiChainmail";
+import { TransactionToast } from "@/lib/components";
 
 type FulfilOrderProps = {
   listing: ListingData;
@@ -79,13 +80,12 @@ const FulfilOrder = ({ listing }: FulfilOrderProps) => {
             Encrypt & Fulfil Order
           </button>
         </div>
-
-        {hash && <div>Transaction Hash: {hash}</div>}
-        {isConfirming && <div>Waiting for confirmation...</div>}
-        {isConfirmed && <div>Transaction confirmed.</div>}
-        {error && (
-          <div>Error: {(error as BaseError).shortMessage || error.message}</div>
-        )}
+        <TransactionToast
+          isConfirmed={isConfirmed}
+          isConfirming={isConfirming}
+          error={error}
+          hash={hash}
+        />
       </div>
     </>
   );

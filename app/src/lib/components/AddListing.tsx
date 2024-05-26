@@ -7,6 +7,7 @@ import {
 } from "wagmi";
 import { abi } from "@/lib/abi/abiChainmail";
 import { ethers } from "ethers";
+import { TransactionToast } from "@/lib/components";
 
 type AddListingProps = {
   proof: Proof | undefined;
@@ -123,17 +124,13 @@ const AddListing = ({ proof, emailBody }: AddListingProps) => {
         <button onClick={addListing} className="btn btn-primary">
           Add Listing
         </button>
-        <div className="break-all">
-          {hash && <div>Transaction Hash: {hash}</div>}
-          {isConfirming && <div>Waiting for confirmation...</div>}
-          {isConfirmed && <div>Transaction confirmed.</div>}
-          {error && (
-            <div>
-              Error: {(error as BaseError).shortMessage || error.message}
-            </div>
-          )}
-        </div>
       </div>
+      <TransactionToast
+        isConfirmed={isConfirmed}
+        isConfirming={isConfirming}
+        error={error}
+        hash={hash}
+      />
     </div>
   );
 };

@@ -26,6 +26,7 @@ const DecryptEmailBody = ({ listing, dispute }: DisputeInformationProps) => {
       );
       setDecryptedEmailBody(decrypted as string);
     } catch (error) {
+      setDecryptedEmailBody("Decryption failed");
       console.error(error);
     }
   };
@@ -36,10 +37,7 @@ const DecryptEmailBody = ({ listing, dispute }: DisputeInformationProps) => {
       decode.decimalToAscii(listing.proof.pubSignals[2].toString());
 
     try {
-      const success = await verifyEmailBodyHash(
-        decryptedEmailBody,
-        listingBodyHash
-      );
+      await verifyEmailBodyHash(decryptedEmailBody, listingBodyHash);
       setBodyHash(listingBodyHash);
     } catch (error) {
       setBodyHash("Hash does not match");
@@ -49,8 +47,10 @@ const DecryptEmailBody = ({ listing, dispute }: DisputeInformationProps) => {
 
   useEffect(() => {
     decryptEmailBody();
-    verifyBodyHash();
-  }, []);
+    if (decryptedEmailBody) {
+      verifyBodyHash();
+    }
+  }, [listing, dispute, decryptedEmailBody]);
 
   return (
     <div className="mt-10 flex flex-col justify-center">
@@ -82,9 +82,15 @@ const DecryptEmailBody = ({ listing, dispute }: DisputeInformationProps) => {
                   Decrypted Email
                 </h2>
                 <textarea
-                  className="min-w-64 h-64 text-sm border rounded-lg border-primary1 p-2 bg-background1 textarea textarea-lg "
+                  className={`min-w-64 h-64 text-sm border rounded-lg ${
+                    !decryptedEmailBody ? "border-error" : "border-primary1"
+                  }  p-2 bg-background1 textarea textarea-lg`}
                   readOnly
-                  value={decryptedEmailBody}
+                  value={
+                    decryptedEmailBody
+                      ? decryptedEmailBody
+                      : "Decryption Failed"
+                  }
                 ></textarea>
               </div>
             </div>
@@ -96,7 +102,20 @@ const DecryptEmailBody = ({ listing, dispute }: DisputeInformationProps) => {
           ></div>
         </div>
         <div className="flex flex-col gap-8 mt-10">
-          <ItemDetail title="Body Hash">{bodyHash}</ItemDetail>
+          <div className="flex justify-center items-center">
+            <h3 className="w-1/6 font-bold flex justify-end mr-10 whitespace-nowrap">
+              Body Hash:
+            </h3>
+            <div
+              className={`w-full border rounded-lg overflow-auto ${
+                bodyHash == "Hash does not match"
+                  ? "border-error"
+                  : "border-primary1"
+              }  p-2 bg-background1`}
+            >
+              <div>{bodyHash}</div>
+            </div>
+          </div>
           <ItemDetail title="Dispute Reason">{dispute.reason}</ItemDetail>
         </div>
       </div>

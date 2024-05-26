@@ -1,4 +1,8 @@
-import { DisputeInformation, ListingInformation } from "@/lib/components";
+import {
+  DisputeInformation,
+  DisputeVoting,
+  ListingInformation,
+} from "@/lib/components";
 import { useChainmail } from "@/lib/context/ChainmailContext";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
@@ -8,13 +12,16 @@ import { abi } from "@/lib/abi/abiChainmail";
 const ViewDispute = () => {
   const params = useParams();
   const chainmail = useChainmail();
+  const account = useAccount();
   const [listing, setListing] = useState<ListingData | undefined>(undefined);
+  const [voteStatus, setVoteStatus] = useState<boolean>(false); // [1
   const [dispute, setDispute] = useState<DisputeData>({
     listingId: BigInt(0),
     buyersSecretPgpKey: "" as `0x${string}`,
     votesForBuyer: BigInt(0),
     votesForOwner: BigInt(0),
     createdAt: BigInt(0),
+    reason: "",
   });
 
   const chainmailContractConfig = {
@@ -34,6 +41,14 @@ const ViewDispute = () => {
         functionName: "getDispute",
         args: [BigInt(parseInt(params.id as string))],
       },
+      {
+        ...chainmailContractConfig,
+        functionName: "getVoteStatusOfListing",
+        args: [
+          BigInt(parseInt(params.id as string)),
+          account?.address as `0x${string}`,
+        ],
+      },
     ],
   });
 
@@ -51,6 +66,7 @@ const ViewDispute = () => {
   useEffect(() => {
     if (disputeResponse) {
       setDispute(disputeResponse[0].result as DisputeData);
+      setVoteStatus(disputeResponse[1].result as boolean); // [2
     }
   }, [disputeResponse, disputeLoading, disputeError]);
 
@@ -66,6 +82,11 @@ const ViewDispute = () => {
       <div className="max-w-7xl mx-auto">
         <ListingInformation listing={listing} />
         <DisputeInformation listing={listing} dispute={dispute} />
+        <DisputeVoting
+          listing={listing}
+          dispute={dispute}
+          voteStatus={voteStatus}
+        />
       </div>
     )
   );

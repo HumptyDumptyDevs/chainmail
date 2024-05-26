@@ -105,9 +105,6 @@ const DecryptEmailBody = ({
         <button onClick={verifyBodyHash} className="btn btn-primary mt-10">
           Verify Body Hash
         </button>
-        {/* {calculatedBodyHash && (
-          <pre> Calculated Body Hash: {calculatedBodyHash}</pre>
-        )} */}
       </div>
       <ToastContainer />
     </div>

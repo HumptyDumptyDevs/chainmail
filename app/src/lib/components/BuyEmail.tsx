@@ -6,6 +6,7 @@ import {
 import { abi } from "@/lib/abi/abiChainmail";
 import { convertStringToHex } from "@/lib/utils/utils";
 import { useChainmail } from "@/lib/context/ChainmailContext";
+import { TransactionToast } from "@/lib/components/";
 
 type BuyEmailProps = {
   listingId: bigint;
@@ -45,14 +46,12 @@ const BuyEmail = ({ listingId, pgpPublicKey, listingPrice }: BuyEmailProps) => {
       >
         {isPending ? "Confirming..." : "Buy Email"}
       </button>
-      <div className="pt-4">
-        {hash && <div>Transaction Hash: {hash}</div>}
-        {isConfirming && <div>Waiting for confirmation...</div>}
-        {isConfirmed && <div>Transaction confirmed.</div>}
-        {error && (
-          <div>Error: {(error as BaseError).shortMessage || error.message}</div>
-        )}
-      </div>
+      <TransactionToast
+        isConfirmed={isConfirmed}
+        isConfirming={isConfirming}
+        error={error}
+        hash={hash}
+      />
     </div>
   );
 };

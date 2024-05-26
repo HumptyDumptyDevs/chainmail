@@ -17,6 +17,32 @@ export const abi = [
   },
   {
     "type": "function",
+    "name": "DISPUTE_DURATION",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "FULFILMENT_BUFFER",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
     "name": "allowance",
     "inputs": [
       {
@@ -85,6 +111,19 @@ export const abi = [
   {
     "type": "function",
     "name": "claim",
+    "inputs": [
+      {
+        "name": "_listingId",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "claimPrice",
     "inputs": [
       {
         "name": "_listingId",
@@ -255,6 +294,11 @@ export const abi = [
             "internalType": "uint256"
           },
           {
+            "name": "fulfilledAt",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
             "name": "proof",
             "type": "tuple",
             "internalType": "struct Chainmail.Proof",
@@ -368,6 +412,11 @@ export const abi = [
             "internalType": "uint256"
           },
           {
+            "name": "fulfilledAt",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
             "name": "proof",
             "type": "tuple",
             "internalType": "struct Chainmail.Proof",
@@ -477,6 +526,44 @@ export const abi = [
   },
   {
     "type": "function",
+    "name": "getListingPrice",
+    "inputs": [
+      {
+        "name": "_listingId",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "getListingStatus",
+    "inputs": [
+      {
+        "name": "_listingId",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint8",
+        "internalType": "enum Chainmail.ListingStatus"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
     "name": "getOwnersListings",
     "inputs": [
       {
@@ -528,6 +615,11 @@ export const abi = [
           },
           {
             "name": "createdAt",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "fulfilledAt",
             "type": "uint256",
             "internalType": "uint256"
           },
@@ -597,6 +689,30 @@ export const abi = [
         "name": "",
         "type": "uint256",
         "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "getVoteStatusOfListing",
+    "inputs": [
+      {
+        "name": "_listingId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "_voter",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool",
+        "internalType": "bool"
       }
     ],
     "stateMutability": "view"
@@ -984,6 +1100,31 @@ export const abi = [
   },
   {
     "type": "event",
+    "name": "ListingPriceClaimed",
+    "inputs": [
+      {
+        "name": "listingId",
+        "type": "uint256",
+        "indexed": true,
+        "internalType": "uint256"
+      },
+      {
+        "name": "owner",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "buyer",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
     "name": "ListingPurchased",
     "inputs": [
       {
@@ -1087,6 +1228,16 @@ export const abi = [
   },
   {
     "type": "error",
+    "name": "Chainmail__DisputeTimeHasPassed",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "Chainmail__FulfilmentBufferNotPassed",
+    "inputs": []
+  },
+  {
+    "type": "error",
     "name": "Chainmail__InsufficientEthSent",
     "inputs": [
       {
@@ -1116,6 +1267,11 @@ export const abi = [
         "internalType": "uint256"
       }
     ]
+  },
+  {
+    "type": "error",
+    "name": "Chainmail__InvalidDisputeInitiator",
+    "inputs": []
   },
   {
     "type": "error",

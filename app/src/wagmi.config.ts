@@ -1,5 +1,5 @@
 import { http, createConfig, Config } from "wagmi";
-import { polygon, base, baseSepolia } from "wagmi/chains";
+import { sepolia } from "wagmi/chains";
 import { defineChain } from "viem";
 
 export const local = defineChain({
@@ -15,19 +15,18 @@ export let config: Config;
 
 if (process.env.NODE_ENV === "development") {
   config = createConfig({
-    chains: [baseSepolia, base, local],
+    chains: [sepolia, local],
     transports: {
-      [base.id]: http(),
-      [baseSepolia.id]: http(),
+      [sepolia.id]: http(import.meta.env.VITE_SEPOLIA_RPC_URL),
       [local.id]: http(),
     },
   });
 } else {
   config = createConfig({
-    chains: [base],
+    chains: [sepolia],
     ssr: true,
     transports: {
-      [base.id]: http(),
+      [sepolia.id]: http(import.meta.env.VITE_SEPOLIA_RPC_URL),
     },
   });
 }

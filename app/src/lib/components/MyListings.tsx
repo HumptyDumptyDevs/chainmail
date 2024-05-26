@@ -37,7 +37,9 @@ const MyListings = () => {
 
     // Filter completed listings by status and owner
     const completedListings = chainmail?.activeListings?.filter(
-      (listing) => listing.status === 2 && listing.owner === account?.address
+      (listing) =>
+        (listing.status === 2 || listing.status === 3) &&
+        listing.owner === account?.address
     );
 
     if (completedListings) {
@@ -60,6 +62,13 @@ const MyListings = () => {
       accessor: (listing: ListingData) => (
         <ListingStatusBadge status={listing.status} />
       ),
+    },
+  ];
+
+  const activeListingRowActions = [
+    {
+      label: "View Listing",
+      onClick: (listing: ListingData) => navigate(`/listings/${listing.id}`),
     },
   ];
 

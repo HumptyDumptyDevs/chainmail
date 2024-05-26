@@ -1,4 +1,8 @@
-import { DecryptEmailBody, ListingInformation } from "@/lib/components";
+import {
+  DecryptEmailBody,
+  ListingInformation,
+  TransactionToast,
+} from "@/lib/components";
 import { useChainmail } from "@/lib/context/ChainmailContext";
 import {
   Description,
@@ -74,6 +78,7 @@ const ViewOrder = () => {
   useEffect(() => {
     if (isConfirmed) {
       setIsOpen(false);
+      navigate(`/disputes/${listing?.id}`);
     }
   }, [isConfirmed]);
 
@@ -90,19 +95,20 @@ const ViewOrder = () => {
               </button>
             </div>
           </>
-        ) : (
+        ) : listing.status === 4 ? (
           <div className="flex flex-col mt-10 gap-10 items-center">
             <div className="text-center text-text-2 font-bold text-2xl">
               This order is being disputed.
             </div>
             <button
-              className="btn btn-primary    w-fit"
+              className="btn btn-primary w-fit"
               onClick={() => navigate(`/disputes/${listing.id}`)}
             >
               View dispute
             </button>
           </div>
-        )}
+        ) : null}{" "}
+        {/* Show nothing for statuses 0, 1, and 3 */}
         <Dialog
           open={isOpen}
           onClose={() => setIsOpen(false)}
@@ -132,21 +138,16 @@ const ViewOrder = () => {
                 <button className="btn btn-primary" onClick={openDispute}>
                   Open
                 </button>
-                <div className="break-all">
-                  {hash && <div>Transaction Hash: {hash}</div>}
-                  {isConfirming && <div>Waiting for confirmation...</div>}
-                  {isConfirmed && <div>Transaction confirmed.</div>}
-                  {error && (
-                    <div>
-                      Error:{" "}
-                      {(error as BaseError).shortMessage || error.message}
-                    </div>
-                  )}
-                </div>
               </div>
             </DialogPanel>
           </div>
         </Dialog>
+        <TransactionToast
+          isConfirmed={isConfirmed}
+          isConfirming={isConfirming}
+          error={error}
+          hash={hash}
+        />
       </div>
     )
   );

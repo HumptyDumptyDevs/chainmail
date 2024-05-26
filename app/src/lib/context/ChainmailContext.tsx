@@ -6,8 +6,10 @@ interface ChainmailContextType {
   activeListings: readonly ListingData[] | undefined;
   ownersListings: readonly ListingData[] | undefined;
   buyersListings: readonly ListingData[] | undefined;
+  disputeDuration: bigint | undefined;
   listingsLoading: boolean;
   stakeOfAuthenticity: bigint | undefined;
+  myTokenBalance: bigint | undefined;
 }
 
 export const ChainmailContext = createContext<ChainmailContextType | null>(
@@ -56,6 +58,15 @@ export const ChainmailProvider = ({ children }: ChainmailProviderProps) => {
         ...chainmailContractConfig,
         functionName: "getStakeOfAuthenticity",
       },
+      {
+        ...chainmailContractConfig,
+        functionName: "DISPUTE_DURATION",
+      },
+      {
+        ...chainmailContractConfig,
+        functionName: "balanceOf",
+        args: [address as `0x${string}`],
+      },
     ],
   });
 
@@ -74,6 +85,8 @@ export const ChainmailProvider = ({ children }: ChainmailProviderProps) => {
   const ownersListings = listingsResponse?.[1]?.result;
   const buyersListings = listingsResponse?.[2]?.result;
   const stakeOfAuthenticity = listingsResponse?.[3]?.result;
+  const disputeDuration = listingsResponse?.[4]?.result;
+  const myTokenBalance = listingsResponse?.[5]?.result;
 
   console.log("activeListings", activeListings);
 
@@ -85,6 +98,8 @@ export const ChainmailProvider = ({ children }: ChainmailProviderProps) => {
         buyersListings,
         listingsLoading,
         stakeOfAuthenticity,
+        disputeDuration,
+        myTokenBalance,
       }}
     >
       {children}

@@ -1,12 +1,14 @@
-// @ts-nocheck
-
 import React, { useState, useEffect } from "react";
 import ReactApexChart from "react-apexcharts";
 
-const VotesBar = (voteForBuyer, votesForSeller) => {
+const VotesBar = ({ voteForBuyer, votesForSeller }) => {
   const [chartOptions, setChartOptions] = useState(null);
 
   useEffect(() => {
+    const initialVotes = voteForBuyer === 0 && votesForSeller === 0;
+    const buyerVotes = initialVotes ? 50 : voteForBuyer;
+    const sellerVotes = initialVotes ? 50 : votesForSeller;
+
     setChartOptions({
       chart: {
         type: "bar",
@@ -81,15 +83,18 @@ const VotesBar = (voteForBuyer, votesForSeller) => {
           stops: [90, 0, 100],
         },
         colors: ["#16968E", "#9CC2C9"],
-        tooltip: {
-          enabled: false,
-        },
+      },
+      tooltip: {
+        enabled: false,
       },
       legend: {
         show: false,
       },
+      selection: {
+        enabled: false,
+      },
     });
-  }, []);
+  }, [voteForBuyer, votesForSeller]);
 
   return (
     <div id="chart">
