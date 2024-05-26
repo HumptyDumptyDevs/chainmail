@@ -1,9 +1,9 @@
-# Chainmail: ZKP Email Marketplace 🛡️
+# Chainmail: ZKP Email Marketplace 📧🛡️
 
 ![heh](https://www.highdefdigest.com/blog/wp-content/uploads/2019/01/monty-python-holy-grail-880x320.jpg)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-Chainmail is an email marketplace for emails verified using Zero-Knowledge Proofs (ZKPs) to prove the authenticity of the sender whilst preserving the anonymity of the recipient.
+Chainmail is a marketplace for emails verified using Zero-Knowledge Proofs (ZKPs) to prove the authenticity of the sender whilst preserving the anonymity of the recipient.
 
 ## 🗺️ Project Overview
 
@@ -19,9 +19,9 @@ Transaction disputes are mediated via an implemented DAO (Chainmail DAO).
 
 ## 🎯 Project Goals
 
-- **Empower information distribution:** ?
-- **Protect privacy:** ?
-- **?:** ?
+- **Empower information distribution:** Provide a platform and mechanisms for encrypted transmission of email data.
+- **Verify authenticity:** Ensure that information transferred between parties are authentic.
+- **Protect privacy:** Obfuscate the identity of an email recipient
 
 ## 🏗️ Project Structure
 

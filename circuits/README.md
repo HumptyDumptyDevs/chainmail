@@ -55,9 +55,9 @@ circom -l ../node_modules/  --wasm --r1cs chainmail.circom
 
 Compiling the circuit will produce outputs:
 
-`chainmail.r1cs` - a file representing the circuit's constraints
-`chainmail_js/chainmail.wasm` - a WebAssembly file that contains an optimized version of the circuit logic
-`chainmail_js/generate_witness.js` - a script to generate the witness file using inputs (generated in next step)
+**`chainmail.r1cs`** - a file representing the circuit's constraints
+**`chainmail_js/chainmail.wasm`** - a WebAssembly file that contains an optimized version of the circuit logic
+**`chainmail_js/generate_witness.js`** - a script to generate the witness file using inputs (generated in next step)
 
 **3. Prepare build files**
 

@@ -1,4 +1,4 @@
-# Chainmail Marketplace 🔗
+# Chainmail Marketplace
 
 This code runs a marketplace to facilitate the transactions of emails via Zero-Knowledge Proofs (ZKPs).
 
@@ -8,7 +8,7 @@ This code runs a marketplace to facilitate the transactions of emails via Zero-K
 
 #### Pre-requisites
 
-**1. Obtain witness, verifier & zkeys**
+**1. Obtain witness, verifier & zKeys**
 
 Navigate to [../circuits](../circuits) for instructions.
 
@@ -17,7 +17,7 @@ Copy the below files into [./public](./public):
 ```
 chainmail.wasm
 chainmail.vkey.json
-chainmail.zkey{abc...}  <-- Ensure all zkey chunks are copied
+chainmail.zkey{abc...}  <-- Ensure all zKey chunks are copied
 ```
 
 **2. Create .env.local file with contract address**
