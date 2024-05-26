@@ -82,5 +82,7 @@ NODE_OPTIONS="--max-old-space-size=614400" ts-node setup.ts
 **5. Copy artifacts into app**
 
 ```
-cp build/artifacts/* ../app/public
+cp build/*.zkey* ../app/public
+cp build/artifacts/chainmail.vkey.json ../app/public
+cp build/artifacts/chainmail.wasm ../app/public
 ```
