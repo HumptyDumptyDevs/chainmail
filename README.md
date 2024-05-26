@@ -1,6 +1,6 @@
 # Chainmail: ZKP Email Marketplace 📧🛡️
 
-![heh](https://www.highdefdigest.com/blog/wp-content/uploads/2019/01/monty-python-holy-grail-880x320.jpg)
+![heh](./cm.jpeg)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 Chainmail is a marketplace for emails verified using Zero-Knowledge Proofs (ZKPs) to prove the authenticity of the sender whilst preserving the anonymity of the recipient.
