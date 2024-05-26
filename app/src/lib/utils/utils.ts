@@ -1,12 +1,14 @@
 import { ethers } from "ethers";
 
 export const convertStringToHex = (str: string) => {
+  if (!str) return "";
   const bytes = ethers.utils.toUtf8Bytes(str);
   const hex = ethers.utils.hexlify(bytes);
   return hex;
 };
 
 export const convertHexToString = (hex: string) => {
+  if (!hex) return "";
   const bytes = ethers.utils.arrayify(hex);
   const str = ethers.utils.toUtf8String(bytes);
   return str;

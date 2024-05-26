@@ -25,6 +25,9 @@ contract Chainmail is ERC20, Ownable {
     error Chainmail__InvalidListingOwner();
     error Chainmail__OwnerTransferFailed();
     error Chainmail__BuyerTransferFailed();
+    error Chainmail__InvalidDisputeInitiator();
+    error Chainmail__FulfilmentBufferNotPassed();
+    error Chainmail__DisputeTimeHasPassed();
 
     error Chainmail__AlreadyVoted();
     error Chainmail__DisputeDurationPassed();
@@ -63,6 +66,7 @@ contract Chainmail is ERC20, Ownable {
         uint256 ownerStakeOfAuthenticity; // Do I need to track these in the lising?
         uint256 buyerStakeOfAuthenticity; // I dont think I do.
         uint256 createdAt;
+        uint256 fulfilledAt;
         Proof proof;
         bytes buyersPublicPgpKey;
         bytes encryptedMailData;
@@ -99,7 +103,8 @@ contract Chainmail is ERC20, Ownable {
     uint256 public i_stakeOfAuthenticity;
 
     // Constants
-    uint256 constant DISPUTE_DURATION = 2 days;
+    uint256 public constant DISPUTE_DURATION = 2 days;
+    uint256 public constant FULFILMENT_BUFFER = 1 days;
 
     //Storage
     uint256 public s_listingId;
@@ -121,6 +126,7 @@ contract Chainmail is ERC20, Ownable {
     event ListingDelivered(
         uint256 indexed listingId, address indexed owner, address indexed buyer, bytes encryptedMailData
     );
+    event ListingPriceClaimed(uint256 indexed listingId, address indexed owner, address indexed buyer);
     event ListingDisputed(uint256 indexed listingId, address indexed buyer, address indexed owner);
     event ListingDisputeUpdated(uint256 indexed listingId, uint256 votesForOwner, uint256 votesForBuyer);
 
@@ -200,6 +206,7 @@ contract Chainmail is ERC20, Ownable {
             ownerStakeOfAuthenticity: msg.value,
             buyerStakeOfAuthenticity: 0,
             createdAt: block.timestamp,
+            fulfilledAt: 0,
             proof: _proof,
             buyersPublicPgpKey: "",
             encryptedMailData: "",
@@ -275,9 +282,38 @@ contract Chainmail is ERC20, Ownable {
 
         listing.encryptedMailData = _encryptedMailData;
         listing.status = ListingStatus.FULFILLED;
+        listing.fulfilledAt = block.timestamp;
 
         emit ListingDelivered(_listingId, listing.owner, msg.sender, _encryptedMailData);
         emit ListingStatusChanged(_listingId, ListingStatus.FULFILLED);
+    }
+
+    /*
+     * @notice Once the buffer for dispute raising has passed, allow the owner to claim the price
+     * @param _listingId The id of the listing to claim
+     */
+    function claimPrice(uint256 _listingId) public {
+        Listing storage listing = s_listings[_listingId];
+
+        if (listing.status != ListingStatus.FULFILLED) {
+            revert Chainmail__InvalidListingStatus(listing.status);
+        }
+
+        if (block.timestamp < listing.fulfilledAt + FULFILMENT_BUFFER) {
+            revert Chainmail__FulfilmentBufferNotPassed();
+        }
+
+        listing.status = ListingStatus.COMPLETED;
+        emit ListingStatusChanged(_listingId, ListingStatus.COMPLETED);
+        emit ListingPriceClaimed(_listingId, listing.owner, listing.buyer);
+
+        // Make Transfers
+
+        uint256 amountToTransferToOwner = listing.price + listing.ownerStakeOfAuthenticity;
+        uint256 amountToTransferToBuyer = listing.buyerStakeOfAuthenticity;
+
+        transfer(listing.owner, amountToTransferToOwner);
+        transfer(listing.buyer, amountToTransferToBuyer);
     }
 
     //////////////////////////////////////
@@ -339,6 +375,18 @@ contract Chainmail is ERC20, Ownable {
         return i_stakeOfAuthenticity;
     }
 
+    function getListingPrice(uint256 _listingId) external view returns (uint256) {
+        return s_listings[_listingId].price;
+    }
+
+    function getListingStatus(uint256 _listingId) external view returns (ListingStatus) {
+        return s_listings[_listingId].status;
+    }
+
+    function getVoteStatusOfListing(uint256 _listingId, address _voter) external view returns (bool) {
+        return s_alreadyVoted[_voter][_listingId];
+    }
+
     ///////////////
     // Dispute   //
     //////////////
@@ -354,8 +402,12 @@ contract Chainmail is ERC20, Ownable {
             revert Chainmail__InvalidListingStatus(s_listings[_listingId].status);
         }
 
-        if (msg.sender != s_listings[_listingId].buyer || msg.sender != s_listings[_listingId].owner) {
-            revert Chainmail__InvalidListingOwner();
+        if (block.timestamp > s_listings[_listingId].fulfilledAt + FULFILMENT_BUFFER) {
+            revert Chainmail__DisputeTimeHasPassed();
+        }
+
+        if (msg.sender != s_listings[_listingId].buyer) {
+            revert Chainmail__InvalidDisputeInitiator();
         }
 
         Dispute memory _dispute = Dispute({
@@ -402,6 +454,14 @@ contract Chainmail is ERC20, Ownable {
         s_alreadyVoted[msg.sender][_listingId] = true;
         s_Votes[msg.sender][_listingId] =
             Vote({buyerIsRight: buyerIsRight, amount: balanceOf(msg.sender), claimed: false});
+
+        uint256 totalVotes = s_disputes[_listingId].votesForOwner + s_disputes[_listingId].votesForBuyer;
+        uint256 quoram = totalSupply() / 2;
+
+        if (totalVotes >= quoram) {
+            resolve(_listingId);
+        }
+
         emit ListingDisputeUpdated(
             _listingId, s_disputes[_listingId].votesForOwner, s_disputes[_listingId].votesForBuyer
         );
@@ -415,16 +475,39 @@ contract Chainmail is ERC20, Ownable {
             revert Chainmail__InvalidListingStatus(s_listings[_listingId].status);
         }
 
-        if (block.timestamp < s_disputes[_listingId].createdAt + DISPUTE_DURATION) {
+        bool quoramReached = false;
+        uint256 totalVotes = s_disputes[_listingId].votesForOwner + s_disputes[_listingId].votesForBuyer;
+        uint256 quoram = totalSupply() / 2;
+
+        if (totalVotes >= quoram) {
+            quoramReached = true;
+        }
+
+        if (quoramReached == false && block.timestamp < s_disputes[_listingId].createdAt + DISPUTE_DURATION) {
             revert Chainmail__DisputeDurationPassed();
         }
 
         s_listings[_listingId].status = ListingStatus.COMPLETED;
         emit ListingStatusChanged(_listingId, ListingStatus.COMPLETED);
+
+        //Transfer winners stake of authenticity back to them
+        if (s_disputes[_listingId].votesForBuyer > s_disputes[_listingId].votesForOwner) {
+            // Buyer wins
+            address buyer = s_listings[_listingId].buyer;
+            uint256 amountToTransfer = s_listings[_listingId].buyerStakeOfAuthenticity + s_listings[_listingId].price;
+
+            transfer(buyer, amountToTransfer);
+            //transfer their price back to them
+        } else {
+            // Owner wins
+            address owner = s_listings[_listingId].owner;
+            uint256 amountToTransfer = s_listings[_listingId].ownerStakeOfAuthenticity + s_listings[_listingId].price;
+            transfer(owner, amountToTransfer);
+        }
     }
 
     /*
-    * Allows the buyer or owner to claim the reward
+    * Allows anyone to claim the reward
     * @param _listingId The id of the listing
     */
     function claim(uint256 _listingId) public {
@@ -436,8 +519,8 @@ contract Chainmail is ERC20, Ownable {
             if (s_disputes[_listingId].votesForBuyer > s_disputes[_listingId].votesForOwner) {
                 // Buyer wins
                 if (s_Votes[msg.sender][_listingId].buyerIsRight) {
-                    uint256 amount = (s_Votes[msg.sender][_listingId].amount / s_disputes[_listingId].votesForOwner)
-                        * s_listings[_listingId].ownerStakeOfAuthenticity;
+                    uint256 amount = (s_Votes[msg.sender][_listingId].amount / s_disputes[_listingId].votesForBuyer)
+                        * s_listings[_listingId].buyerStakeOfAuthenticity;
 
                     s_Votes[msg.sender][_listingId].claimed = true;
                     transfer(msg.sender, amount);
