@@ -20,8 +20,8 @@ Transaction disputes are mediated via an implemented DAO (Chainmail DAO).
 ## 🎯 Project Goals
 
 - **Empower information distribution:** Provide a platform and mechanisms for encrypted transmission of email data.
-- **Verify authenticity:** Ensure that information transferred between parties are authentic.
-- **Protect privacy:** Obfuscate the identity of an email recipient
+- **Verify authenticity:** Ensure that information transferred between parties is authentic.
+- **Protect privacy:** Redact the identity of an email recipient
 
 ## 🏗️ Project Structure
 
